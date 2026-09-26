@@ -46,8 +46,8 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** I drag the window's corner to make it wider or taller
 - **Then:** the digits resize as I drag to the tallest height that fits the width, stay centred, and never clip or wrap
 
-- **Notes:** The fit is context-grabber's `ledHeightToFit`: the string's width at height 1, scaled to the
-  window's width, capped by its height.
+- **Notes:** `LedGeometry.faceHeights`: context-grabber's `ledHeightToFit` (the string's width at height 1,
+  scaled to the window's width, capped by its height) extended to the word above and the glow around each string.
 - **Issues:** none yet
 
 ---
