@@ -22,8 +22,14 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** I switch to another app and bring its window over the timer
 - **Then:** the timer stays in front, is only the black LED panel, can be dragged from anywhere on it, and follows me to other Spaces
 
+- **Scenario:** The timer sits over something
+- **Given:** the timer window is over a document or a video
+- **When:** I look at it
+- **Then:** the black panel is slightly translucent, so what is underneath still shows faintly, while the digits stay as readable as on solid black; in full screen the panel is solid black
+
 - **Notes:** ⌘P toggles the pin; unpinned, it is an ordinary window. The pin and the window's frame are
-  remembered.
+  remembered. The panel is black at 75% opacity (`TimerFaceView.windowedOpacity`); `just snapshots` writes
+  `running-over-content.png` to judge it.
 - **Issues:** none yet
 
 ---

@@ -147,22 +147,32 @@ final class TimerModel {
 
     // MARK: - the window (stories 008, 009)
 
-    var isFullScreen: Bool { window?.styleMask.contains(.fullScreen) ?? false }
+    /// Observed so the panel turns solid black in full screen and translucent again as a window.
+    private(set) var isFullScreen = false
 
     func attach(_ window: NSWindow) {
         guard window !== self.window else { return }
         self.window = window
         window.setFrameAutosaveName("LCDTimerWindow")
         window.isMovableByWindowBackground = true
-        window.backgroundColor = .black
+        // Clear, so the view's translucent black panel is the only background (story 008).
+        window.isOpaque = false
+        window.backgroundColor = .clear
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
+        isFullScreen = window.styleMask.contains(.fullScreen)
         let center = NotificationCenter.default
-        center.addObserver(forName: NSWindow.didEnterFullScreenNotification, object: window, queue: .main) { _ in
-            NSCursor.setHiddenUntilMouseMoves(true)
+        center.addObserver(forName: NSWindow.didEnterFullScreenNotification, object: window, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.isFullScreen = true
+                NSCursor.setHiddenUntilMouseMoves(true)
+            }
         }
         center.addObserver(forName: NSWindow.didExitFullScreenNotification, object: window, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.applyPin() }
+            MainActor.assumeIsolated {
+                self?.isFullScreen = false
+                self?.applyPin()
+            }
         }
         applyPin()
     }

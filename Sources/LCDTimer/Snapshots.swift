@@ -25,6 +25,13 @@ enum Snapshots {
                       to: directory.appendingPathComponent("\(name)-\(Int(size.width))x\(Int(size.height)).png"))
             }
         }
+        // The windowed panel over something busy, to judge how much shows through.
+        let busy = LinearGradient(colors: [.white, .blue, .yellow], startPoint: .topLeading, endPoint: .bottomTrailing)
+        write(FaceLayout(face: faces[1].1)
+                .background(Color.black.opacity(TimerFaceView.windowedOpacity))
+                .frame(width: 480, height: 200)
+                .background(busy),
+              to: directory.appendingPathComponent("running-over-content.png"))
         for (name, text, tone) in [("menubar-idle", "8", Tone.white), ("menubar-running", "04:59", .red)] {
             let image = MenuBarLabel.render(text: text, tone: tone)
             write(Image(nsImage: image).padding(4).background(Color.gray), to: directory.appendingPathComponent("\(name).png"))

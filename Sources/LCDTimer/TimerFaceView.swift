@@ -7,9 +7,13 @@ struct TimerFaceView: View {
     @Environment(TimerModel.self) private var model
     @FocusState private var focused: Bool
 
+    /// How opaque the black panel is as a window, so what is underneath still shows a little (story 008).
+    /// Full screen is solid black: there it is the wall clock (story 009).
+    static let windowedOpacity = 0.75
+
     var body: some View {
         FaceLayout(face: model.face)
-            .background(Color.black)
+            .background(Color.black.opacity(model.isFullScreen ? 1 : Self.windowedOpacity))
         .contentShape(Rectangle())
         .onTapGesture { model.toggle() }
         .focusable()
