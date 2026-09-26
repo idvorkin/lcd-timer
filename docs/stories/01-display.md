@@ -9,7 +9,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 001:
 
 - **Summary:** The time is a seven-segment LED display, not type
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; verified on the host (glyphs, ghosts, colon) and in `just snapshots`
 - **Why:** "What I like is that old LCD countdown", the Gym Timer's LED face in context-grabber.
 
 #### Use Case:
@@ -33,7 +33,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 002:
 
 - **Summary:** The digits fill whatever window they are in
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; verified on the host (`faceHeights`) and in `just snapshots` at two sizes; live resizing is Igor's check pending
 
 #### Use Case:
 - **As a** person who sizes the timer to fit the moment, a corner of the screen or the whole of it
@@ -55,7 +55,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 003:
 
 - **Summary:** The colour and an LED word say what the timer is doing
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; verified on the host (the face per phase) and in `just snapshots`
 
 #### Use Case:
 - **As a** person who looks up mid-task

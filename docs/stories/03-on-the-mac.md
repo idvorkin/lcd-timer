@@ -9,7 +9,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 008:
 
 - **Summary:** A small timer window that floats above my work
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; builds and launches on the Mac; pinning is Igor's check pending
 
 #### Use Case:
 - **As a** person working in other apps while the timer runs
@@ -31,7 +31,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 009:
 
 - **Summary:** Full screen turns the Mac into a wall clock
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; builds and launches on the Mac; ⌃⌘F and the three-metre read are Igor's check pending
 
 #### Use Case:
 - **As a** person using a Mac or an external display as the gym clock
@@ -51,7 +51,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 010:
 
 - **Summary:** The time left is in the menu bar
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; the pill verified in `just snapshots`; the live menu bar item is Igor's check pending
 
 #### Use Case:
 - **As a** person who has hidden or closed the timer window

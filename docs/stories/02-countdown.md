@@ -9,7 +9,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 004:
 
 - **Summary:** Type a time like a microwave
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; verified on the host (entry, normalising); the keys in the app are Igor's check pending
 
 #### Use Case:
 - **As a** person who knows how long they want
@@ -36,7 +36,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 005:
 
 - **Summary:** Start, pause, resume and reset from the keyboard
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; verified on the host (toggle, reset); the keys and the click are Igor's check pending
 
 #### Use Case:
 - **As a** person with their hands busy
@@ -62,7 +62,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 006:
 
 - **Summary:** Time's up is impossible to miss
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; builds and launches on the Mac; the chime and the notification are Igor's check pending
 
 #### Use Case:
 - **As a** person who has stopped watching the timer
@@ -83,7 +83,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 007:
 
 - **Summary:** The time stays right through sleep and a busy Mac (technical)
-- **Status:** not implemented
+- **Status:** implemented in 4de308b; verified on the host with an injected clock; a real lid close is Igor's check pending
 
 #### Use Case:
 - **As a** person whose Mac sleeps, or who hides the window for an hour
