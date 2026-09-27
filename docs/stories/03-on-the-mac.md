@@ -73,3 +73,26 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **Notes:** Closing the window never stops a running countdown. Idle and with no window open, the menu bar
   item is a small LED `8` only.
 - **Issues:** none yet
+
+---
+
+### User Story 011:
+
+- **Summary:** The timer has its own icon, so I can find it in ⌘Tab and the Dock
+- **Status:** not implemented
+- **Why:** "you need an icon so it shows up in alt tab"
+
+#### Use Case:
+- **As a** person switching between apps with ⌘Tab
+- **I want to** see the timer as an LED clock among the app icons
+- **so that** I can jump back to it without hunting for a blank generic icon
+
+#### Acceptance Criteria:
+- **Scenario:** Switching back to the timer
+- **Given:** the timer is running and I am in another app
+- **When:** I hold ⌘Tab
+- **Then:** the timer shows as a black rounded square with a red LED `5:00`, drawn in the same segments as the face
+
+- **Notes:** The icon is drawn, not a checked-in bitmap: `LCDTimer --icon <dir>.iconset` renders the LED view at
+  every size and `just app` runs `iconutil` into `Contents/Resources/AppIcon.icns`.
+- **Issues:** none yet

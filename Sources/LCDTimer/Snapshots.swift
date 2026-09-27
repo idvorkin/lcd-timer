@@ -39,9 +39,9 @@ enum Snapshots {
         exit(0)
     }
 
-    private static func write(_ view: some View, to url: URL) {
+    static func write(_ view: some View, to url: URL, scale: CGFloat = 2) {
         let renderer = ImageRenderer(content: view)
-        renderer.scale = 2
+        renderer.scale = scale
         guard let image = renderer.cgImage else { return }
         let bitmap = NSBitmapImageRep(cgImage: image)
         try? bitmap.representation(using: .png, properties: [:])?.write(to: url)

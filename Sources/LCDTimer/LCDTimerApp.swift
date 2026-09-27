@@ -9,6 +9,7 @@ struct LCDTimerApp: App {
 
     init() {
         Snapshots.runIfAsked()  // before the model, which asks for notification permission
+        AppIcon.runIfAsked()
         model = TimerModel()
         // The app's own ⌃⌘F replaces AppKit's automatic "Enter Full Screen" item (see TimerModel.toggleFullScreen).
         UserDefaults.standard.set(false, forKey: "NSFullScreenMenuItemEverywhere")
