@@ -1,0 +1,30 @@
+# no-mistakes gate config. commands, review, and no_ci are read only from main.
+
+commands:
+  test: "just test"
+
+# No GitHub workflows in this repo; `just test` (swift test, ~1s) is the whole suite.
+no_ci: true
+
+review:
+  path_instructions:
+    - path: "Sources/LCDTimer/*.swift"
+      instructions: |
+        No `@State`: its SwiftUI macro plugin ships only with Xcode and this package builds with the
+        Command Line Tools only. The model is an `@Observable` class held by the App instead. Any other
+        SwiftUI macro likely hits the same wall - check `swift build` after adding one.
+    - path: "Sources/TimerCore/*.swift"
+      instructions: |
+        Platform-free by design: no AppKit/SwiftUI imports, so it stays testable on the host. The countdown
+        stores its end time and derives the displayed time from the clock, never by counting ticks - that's
+        what keeps it correct across sleep. Time-dependent logic takes an injected clock, never the system
+        clock directly.
+    - path: "Tests/TimerCoreTests/*.swift"
+      instructions: |
+        Anything with a clock is tested via an injected clock, never `sleep` or real waiting.
+    - path: "docs/stories/*.md"
+      instructions: |
+        These files are the spec, not prose: Mike Cohn use case plus Gherkin, one When and one Then per
+        scenario. A later change adds a scenario rather than rewriting an earlier one, and story numbers are
+        never reused. The Status line is the only record of where a story stands and must name the commit
+        (and verification rung) for any behaviour change landing alongside it.
