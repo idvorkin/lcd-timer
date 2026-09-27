@@ -16,6 +16,7 @@ struct TimerFaceView: View {
             .background(Color.black.opacity(model.isFullScreen ? 1 : Self.windowedOpacity))
         .contentShape(Rectangle())
         .onTapGesture { model.toggle() }
+        .overlay(alignment: .topTrailing) { CornerButtons() }
         .focusable()
         .focusEffectDisabled()
         .focused($focused)
@@ -23,6 +24,24 @@ struct TimerFaceView: View {
         .onKeyPress(phases: .down) { press in model.handle(press) ? .handled : .ignored }
         .background(WindowAccessor { model.attach($0) })
         .ignoresSafeArea()
+    }
+}
+
+/// Small and dim in the corner, so the digits stay the face: the lock (story 012).
+struct CornerButtons: View {
+    @Environment(TimerModel.self) private var model
+
+    var body: some View {
+        Button { model.lockOut() } label: {
+            Image(systemName: "lock.fill")
+                .font(.system(size: 13))
+                .frame(width: 24, height: 24)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.white.opacity(0.4))
+        .help("Lock me out until zero (L)")
+        .padding(6)
     }
 }
 

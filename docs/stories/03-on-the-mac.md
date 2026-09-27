@@ -121,6 +121,11 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** I press Escape
 - **Then:** the time gives way to "Are you sure?" and a different line; Y resets the timer and lifts the veil, any other key (or 20 seconds of nothing) goes back to the lock
 
+- **Scenario:** Finding the lock without knowing the key
+- **Given:** the timer window shows the time
+- **When:** I look for a way to lock
+- **Then:** a small dim lock sits in the window's top-right corner; clicking it does what L does, and hovering names the key
+
 - **Notes:** The duration is the timer's own: L with nothing typed locks for the last time set, and L on a running
   or paused countdown locks the rest of it. Space does nothing while locked, since a pause would hold the lock
   forever. The menu bar menu has *Lock Me Out*. ⌥⌘Esc still force-quits: a speed bump, not a jail. The lines
