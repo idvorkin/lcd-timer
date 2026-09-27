@@ -11,9 +11,12 @@ test:
 app:
     swift build -c release
     rm -rf "{{app}}"
-    mkdir -p "{{app}}/Contents/MacOS"
+    mkdir -p "{{app}}/Contents/MacOS" "{{app}}/Contents/Resources"
     cp "$(swift build -c release --show-bin-path)/LCDTimer" "{{app}}/Contents/MacOS/"
     cp Support/Info.plist "{{app}}/Contents/"
+    rm -rf build/AppIcon.iconset
+    "{{app}}/Contents/MacOS/LCDTimer" --icon build/AppIcon.iconset
+    iconutil -c icns build/AppIcon.iconset -o "{{app}}/Contents/Resources/AppIcon.icns"
     codesign --force --sign - "{{app}}"
 
 # Build the app and open it: the second rung.
