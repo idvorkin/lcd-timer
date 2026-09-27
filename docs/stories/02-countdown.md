@@ -99,3 +99,26 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **Notes:** The countdown stores its end time and derives the display from the clock; the tick only redraws.
   This state machine lives in the platform-free core and is tested on the host with an injected clock.
 - **Issues:** none yet
+
+---
+
+### User Story 013:
+
+- **Summary:** ? shows every key
+- **Status:** not implemented
+- **Why:** "a ? to see the bindings, I don't see how to do it"
+
+#### Use Case:
+- **As a** person who forgot, or never learned, which key does what
+- **I want to** press ? and see every key with what it does
+- **so that** keyboard-first never means guessing
+
+#### Acceptance Criteria:
+- **Scenario:** Looking up the keys
+- **Given:** the timer window is focused
+- **When:** I press ?, or click the small ? in the window's top-right corner
+- **Then:** the face is covered by the list of keys, amber keys beside what they do; the next key press or a click puts it away without doing anything else, and the countdown carries on underneath
+
+- **Notes:** The list is `KeysHelp.bindings`; a new key adds its row there. `just snapshots` writes
+  `keys-480x200.png`.
+- **Issues:** none yet

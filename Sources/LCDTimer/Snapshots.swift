@@ -32,6 +32,9 @@ enum Snapshots {
                 .frame(width: 480, height: 200)
                 .background(busy),
               to: directory.appendingPathComponent("running-over-content.png"))
+        // Story 013: the keys, at the default window size.
+        write(KeysHelp().background(Color.black).frame(width: 480, height: 200),
+              to: directory.appendingPathComponent("keys-480x200.png"))
         // Story 012: the lock screen over something busy, locked and asking.
         let t0 = Date()
         var countdown = Countdown(duration: 1500)

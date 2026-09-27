@@ -16,6 +16,8 @@ final class TimerModel {
     private(set) var now = Date()
     /// Story 012: set while the screen is locked for the countdown.
     private(set) var lockout: Lockout?
+    /// Story 013: the list of keys over the face.
+    var showingHelp = false
 
     /// Story 008: on top of every window and on every Space, only the LED panel.
     var pinned: Bool {
@@ -51,6 +53,15 @@ final class TimerModel {
     // MARK: - keys (stories 004, 005)
 
     func handle(_ press: KeyPress) -> Bool {
+        // Story 013: ? shows the keys; any key puts them away without doing anything else.
+        if showingHelp {
+            showingHelp = false
+            return true
+        }
+        if press.characters == "?" {
+            showingHelp = true
+            return true
+        }
         switch press.key {
         case .return: commit()
         case .space: toggle()
