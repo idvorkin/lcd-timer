@@ -79,7 +79,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 011:
 
 - **Summary:** The timer has its own icon, so I can find it in ⌘Tab and the Dock
-- **Status:** not implemented
+- **Status:** implemented in 85ea3fe; the rendered iconset checked by eye; ⌘Tab is Igor's check pending
 - **Why:** "you need an icon so it shows up in alt tab"
 
 #### Use Case:
