@@ -105,7 +105,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 013:
 
 - **Summary:** ? shows every key
-- **Status:** not implemented
+- **Status:** implemented in 3e2ff36; the list verified in `just snapshots`; the key and the corner button are Igor's check pending
 - **Why:** "a ? to see the bindings, I don't see how to do it"
 
 #### Use Case:
