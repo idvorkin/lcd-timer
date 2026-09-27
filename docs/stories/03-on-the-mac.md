@@ -9,7 +9,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 008:
 
 - **Summary:** A small timer window that floats above my work
-- **Status:** implemented in 4de308b, 2359155 (translucent panel); builds and launches on the Mac; the panel over content verified in `just snapshots`; pinning is Igor's check pending
+- **Status:** implemented in 4de308b, 2359155 (translucent panel), 203d7ad (pinned by default, pin button); builds and launches on the Mac; the panel over content verified in `just snapshots`; pinned over full-screen iTerm2 verified on the Mac from the window list (layer 3, on screen); the pin button is Igor's check pending
 
 #### Use Case:
 - **As a** person working in other apps while the timer runs
