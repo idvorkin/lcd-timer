@@ -14,6 +14,8 @@ final class TimerModel {
     private(set) var countdown: Countdown
     private(set) var entry = Entry()
     private(set) var now = Date()
+    /// Story 012: set while the screen is locked for the countdown.
+    private(set) var lockout: Lockout?
 
     /// Story 008: on top of every window and on every Space, only the LED panel.
     var pinned: Bool {
@@ -27,6 +29,7 @@ final class TimerModel {
     @ObservationIgnored private var announcedDone = false
     @ObservationIgnored private var ticker: Timer?
     @ObservationIgnored private let notifications = Notifications()
+    @ObservationIgnored private let lockWindows = LockWindows()
 
     private enum Keys {
         static let duration = "lastDuration"
@@ -53,6 +56,7 @@ final class TimerModel {
         case .space: toggle()
         case .escape: reset()
         case .delete, .deleteForward: entry.backspace()
+        case _ where press.characters == "l" && press.modifiers.isEmpty: lockOut()
         default:
             guard let digit = press.characters.first?.wholeNumberValue, press.modifiers.isEmpty else { return false }
             type(digit)
@@ -80,6 +84,7 @@ final class TimerModel {
 
     /// Space and a click: start, pause or resume. Something typed is set first, as Return would.
     func toggle() {
+        guard lockout == nil else { return }  // pausing would hold the lock forever
         if !entry.isEmpty { return commit() }
         switch phase {
         case .idle, .done: start()
@@ -98,6 +103,44 @@ final class TimerModel {
         log.info("reset")
         scheduleNotification()
         tick()
+    }
+
+    // MARK: - the lockout (story 012)
+
+    /// L: start what was typed (or the last time, or carry on a running one) with the screen locked until zero.
+    func lockOut() {
+        guard lockout == nil else { return }
+        switch phase {
+        case .paused: toggle()
+        case .idle, .done: commit()
+        case .running: break
+        }
+        guard phase == .running else { return }
+        lockout = Lockout(at: Date())
+        log.info("lock \(self.countdown.remaining(at: Date()), privacy: .public)s")
+        lockWindows.show(model: self)
+    }
+
+    /// Keys on the lock screen: Escape asks "are you sure?"; asked, Y gives up and anything else keeps going.
+    func handleLocked(_ press: KeyPress) {
+        guard var lockout else { return }
+        let now = Date()
+        if lockout.isAsking(at: now) {
+            if press.characters.lowercased() == "y" {
+                log.info("lock abandoned")
+                return reset()
+            }
+            lockout.keepGoing()
+        } else if press.key == .escape {
+            lockout.ask(at: now)
+        }
+        self.lockout = lockout
+    }
+
+    private func unlock() {
+        lockout = nil
+        lockWindows.hide()
+        log.info("unlock")
     }
 
     private func start() {
@@ -128,6 +171,7 @@ final class TimerModel {
 
     private func tick() {
         now = Date()
+        if lockout != nil && phase != .running { unlock() }
         if phase == .done && !announcedDone {
             announcedDone = true
             log.info("done")

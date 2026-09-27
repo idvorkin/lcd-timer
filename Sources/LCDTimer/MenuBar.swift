@@ -40,6 +40,7 @@ struct MenuBarMenu: View {
         case .idle, .done: Button("Start") { model.commit() }
         }
         Button("Reset") { model.reset() }
+        Button("Lock Me Out") { model.lockOut() }
         Button("Show Timer") { OpenWindowBox.shared.open() }
         Divider()
         Button("Quit LCD Timer") { NSApp.terminate(nil) }

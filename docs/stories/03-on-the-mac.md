@@ -96,3 +96,34 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **Notes:** The icon is drawn, not a checked-in bitmap: `LCDTimer --icon <dir>.iconset` renders the LED view at
   every size and `just app` runs `iconutil` into `Contents/Resources/AppIcon.icns`.
 - **Issues:** none yet
+
+---
+
+### User Story 012:
+
+- **Summary:** Lock me out of the Mac for the length of the countdown
+- **Status:** not implemented
+- **Why:** "a button which I press locks me out for that time (though I can abort)… maybe a motivational thing like are you sure? With some eulogy lines"
+
+#### Use Case:
+- **As a** person starting a focus block who knows they will drift to other apps
+- **I want to** grey out the whole Mac until the countdown ends, with leaving early one deliberate question away
+- **so that** keeping the block is the easy path and quitting it is a choice I make on purpose
+
+#### Acceptance Criteria:
+- **Scenario:** Locking for a focus block
+- **Given:** the timer window is focused and idle
+- **When:** I type `2`, `5`, `0`, `0` and press L
+- **Then:** a 25-minute countdown starts and every screen is covered by a dark grey veil with the red LED time under an amber *LOCd* and a line beneath that changes each minute; the Dock, menu bar and ⌘Tab are off; at zero the veil lifts by itself with the usual chime and *donE*
+
+- **Scenario:** Wanting out
+- **Given:** the screen is locked
+- **When:** I press Escape
+- **Then:** the time gives way to "Are you sure?" and a different line; Y resets the timer and lifts the veil, any other key (or 20 seconds of nothing) goes back to the lock
+
+- **Notes:** The duration is the timer's own: L with nothing typed locks for the last time set, and L on a running
+  or paused countdown locks the rest of it. Space does nothing while locked, since a pause would hold the lock
+  forever. The menu bar menu has *Lock Me Out*. ⌥⌘Esc still force-quits: a speed bump, not a jail. The lines
+  are eulogy virtues over résumé virtues (`Lockout.lines`); `just snapshots` writes `locked.png` and
+  `lock-asking.png`.
+- **Issues:** none yet
