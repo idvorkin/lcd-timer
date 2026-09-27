@@ -27,7 +27,14 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** I look at it
 - **Then:** the black panel is slightly translucent, so what is underneath still shows faintly, while the digits stay as readable as on solid black; in full screen the panel is solid black
 
-- **Notes:** ⌘P toggles the pin; unpinned, it is an ordinary window. The pin and the window's frame are
+- **Scenario:** Opening it over a full-screen app
+- **Given:** I work in a full-screen app, such as iTerm2 in its own Space, and have never unpinned the timer
+- **When:** I launch the timer or ⌘Tab to it
+- **Then:** it shows over the full-screen app, pinned; a small pin in the window's top-right corner unpins it (and pins it again), the same as ⌘P
+
+- **Notes:** ⌘P toggles the pin; unpinned, it is an ordinary window, which macOS keeps off a full-screen app's
+  Space (measured: the window lived on a desktop Space while ⌘Tab made the app active with nothing on screen),
+  so a first launch is pinned. The pin and the window's frame are
   remembered. The panel is black at 75% opacity (`TimerFaceView.windowedOpacity`); `just snapshots` writes
   `running-over-content.png` to judge it.
 - **Issues:** none yet

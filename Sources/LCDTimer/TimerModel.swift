@@ -41,7 +41,8 @@ final class TimerModel {
     init() {
         let saved = UserDefaults.standard.double(forKey: Keys.duration)
         countdown = Countdown(duration: saved > 0 ? saved : 300)
-        pinned = UserDefaults.standard.bool(forKey: Keys.pinned)
+        // Pinned until I unpin it: only a pinned window can show over a full-screen app's Space.
+        pinned = UserDefaults.standard.object(forKey: Keys.pinned) as? Bool ?? true
         notifications.onOpen = { OpenWindowBox.shared.open() }
         notifications.requestPermission()
         startTicking()
@@ -247,6 +248,7 @@ final class TimerModel {
         guard let window, !isFullScreen else { return }
         window.level = pinned ? .floating : .normal
         window.collectionBehavior = pinned ? [.canJoinAllSpaces, .fullScreenAuxiliary] : [.fullScreenPrimary]
+        log.info("window pinned=\(self.pinned, privacy: .public) onActiveSpace=\(window.isOnActiveSpace, privacy: .public) visible=\(window.isVisible, privacy: .public) level=\(window.level.rawValue, privacy: .public) frame=\(NSStringFromRect(window.frame), privacy: .public)")
         for button in [NSWindow.ButtonType.closeButton, .miniaturizeButton, .zoomButton] {
             window.standardWindowButton(button)?.isHidden = pinned
         }

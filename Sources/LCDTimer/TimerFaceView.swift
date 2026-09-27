@@ -34,13 +34,17 @@ struct TimerFaceView: View {
     }
 }
 
-/// Small and dim in the corner, so the digits stay the face: the keys (story 013) and the lock (story 012).
+/// Small and dim in the corner, so the digits stay the face: the keys (story 013), the pin (story 008) and the
+/// lock (story 012).
 struct CornerButtons: View {
     @Environment(TimerModel.self) private var model
 
     var body: some View {
         HStack(spacing: 0) {
             corner("questionmark", help: "Keys (?)") { model.showingHelp.toggle() }
+            corner(model.pinned ? "pin.fill" : "pin", help: model.pinned ? "Unpin (⌘P)" : "Pin on top (⌘P)") {
+                model.pinned.toggle()
+            }
             corner("lock.fill", help: "Lock me out until zero (L)") { model.lockOut() }
         }
         .padding(6)
