@@ -11,6 +11,8 @@ project.
 |---|---|
 | `just test` | host tests for TimerCore, about a second |
 | `just run` | release build, wrapped into `build/LCD Timer.app`, ad-hoc signed, opened |
+| `just install` | builds and copies the app into `/Applications` (a snapshot) |
+| `just live-install` | builds and symlinks `/Applications/LCD Timer.app` to the build, so later builds are what opens |
 | `just snapshots` | renders every face and the menu bar pill to `build/snapshots/*.png` |
 | `just logs` | streams the app's log (start, toggle, reset, wake, done) |
 

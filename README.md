@@ -19,8 +19,10 @@ faintly there, drawn rather than typed, as big as the window.
 Needs only the Command Line Tools and [`just`](https://github.com/casey/just).
 
 ```sh
-just test   # host tests for TimerCore
-just run    # builds "build/LCD Timer.app" and opens it
+just test         # host tests for TimerCore
+just run          # builds "build/LCD Timer.app" and opens it
+just install      # copies the app into /Applications
+just live-install # links /Applications to the build, so each `just app` is what opens
 ```
 
 The spec is the [user stories](docs/stories/README.md); agent rules are in [AGENTS.md](AGENTS.md). The LED look
