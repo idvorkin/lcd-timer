@@ -10,6 +10,8 @@ faintly there, drawn rather than typed, as big as the window.
 - **Colour says the state.** White idle, red running, amber *PAUSEd*, red *donE* with a chime and a notification.
 - **Stays out of the way.** ⌘P pins it on top of every window and Space, over a slightly translucent panel;
   ⌃⌘F makes the Mac a wall clock; close the window and the time left stays in the menu bar.
+- **Lock me out.** L starts the countdown with every screen greyed out until zero. Escape asks "Are you
+  sure?" with a line about what the minutes are for; Y gives up.
 - **Always right.** The countdown keeps its end time, so sleep and a hidden window never make it drift.
 
 ![The translucent panel over other content](docs/screenshots/over-content.png)

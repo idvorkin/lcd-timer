@@ -32,6 +32,19 @@ enum Snapshots {
                 .frame(width: 480, height: 200)
                 .background(busy),
               to: directory.appendingPathComponent("running-over-content.png"))
+        // Story 013: the keys, at the default window size.
+        write(KeysHelp().background(Color.black).frame(width: 480, height: 200),
+              to: directory.appendingPathComponent("keys-480x200.png"))
+        // Story 012: the lock screen over something busy, locked and asking.
+        let t0 = Date()
+        var countdown = Countdown(duration: 1500)
+        countdown.start(at: t0)
+        for (name, asking) in [("locked", false), ("lock-asking", true)] {
+            write(LockScreen(face: Face(locked: countdown, at: t0 + 1), line: Lockout.lines[asking ? 1 : 0], asking: asking)
+                    .frame(width: 1440, height: 900)
+                    .background(busy),
+                  to: directory.appendingPathComponent("\(name).png"), scale: 1)
+        }
         for (name, text, tone) in [("menubar-idle", "8", Tone.white), ("menubar-running", "04:59", .red)] {
             let image = MenuBarLabel.render(text: text, tone: tone)
             write(Image(nsImage: image).padding(4).background(Color.gray), to: directory.appendingPathComponent("\(name).png"))

@@ -9,7 +9,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 008:
 
 - **Summary:** A small timer window that floats above my work
-- **Status:** implemented in 4de308b, 2359155 (translucent panel); builds and launches on the Mac; the panel over content verified in `just snapshots`; pinning is Igor's check pending
+- **Status:** implemented in 4de308b, 2359155 (translucent panel), 4b95f31 (pinned by default, pin button); builds and launches on the Mac; the panel over content verified in `just snapshots`; pinned over full-screen iTerm2 verified on the Mac from the window list (layer 3, on screen); the pin button is Igor's check pending
 
 #### Use Case:
 - **As a** person working in other apps while the timer runs
@@ -27,7 +27,14 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** I look at it
 - **Then:** the black panel is slightly translucent, so what is underneath still shows faintly, while the digits stay as readable as on solid black; in full screen the panel is solid black
 
-- **Notes:** ⌘P toggles the pin; unpinned, it is an ordinary window. The pin and the window's frame are
+- **Scenario:** Opening it over a full-screen app
+- **Given:** I work in a full-screen app, such as iTerm2 in its own Space, and have never unpinned the timer
+- **When:** I launch the timer or ⌘Tab to it
+- **Then:** it shows over the full-screen app, pinned; a small pin in the window's top-right corner unpins it (and pins it again), the same as ⌘P
+
+- **Notes:** ⌘P toggles the pin; unpinned, it is an ordinary window, which macOS keeps off a full-screen app's
+  Space (measured: the window lived on a desktop Space while ⌘Tab made the app active with nothing on screen),
+  so a first launch is pinned. The pin and the window's frame are
   remembered. The panel is black at 75% opacity (`TimerFaceView.windowedOpacity`); `just snapshots` writes
   `running-over-content.png` to judge it.
 - **Issues:** none yet
@@ -95,4 +102,40 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 
 - **Notes:** The icon is drawn, not a checked-in bitmap: `LCDTimer --icon <dir>.iconset` renders the LED view at
   every size and `just app` runs `iconutil` into `Contents/Resources/AppIcon.icns`.
+- **Issues:** none yet
+
+---
+
+### User Story 012:
+
+- **Summary:** Lock me out of the Mac for the length of the countdown
+- **Status:** implemented in 7cea64e, 12479be (corner button); verified on the host (lines, asking, timeout); the look in `just snapshots`; covering every screen, the keys and ⌘Tab blocked are Igor's check pending
+- **Why:** "a button which I press locks me out for that time (though I can abort)… maybe a motivational thing like are you sure? With some eulogy lines"
+
+#### Use Case:
+- **As a** person starting a focus block who knows they will drift to other apps
+- **I want to** grey out the whole Mac until the countdown ends, with leaving early one deliberate question away
+- **so that** keeping the block is the easy path and quitting it is a choice I make on purpose
+
+#### Acceptance Criteria:
+- **Scenario:** Locking for a focus block
+- **Given:** the timer window is focused and idle
+- **When:** I type `2`, `5`, `0`, `0` and press L
+- **Then:** a 25-minute countdown starts and every screen is covered by a dark grey veil with the red LED time under an amber *LOCd* and a line beneath that changes each minute; the Dock, menu bar and ⌘Tab are off; at zero the veil lifts by itself with the usual chime and *donE*
+
+- **Scenario:** Wanting out
+- **Given:** the screen is locked
+- **When:** I press Escape
+- **Then:** the time gives way to "Are you sure?" and a different line; Y resets the timer and lifts the veil, any other key (or 20 seconds of nothing) goes back to the lock
+
+- **Scenario:** Finding the lock without knowing the key
+- **Given:** the timer window shows the time
+- **When:** I look for a way to lock
+- **Then:** a small dim lock sits in the window's top-right corner; clicking it does what L does, and hovering names the key
+
+- **Notes:** The duration is the timer's own: L with nothing typed locks for the last time set, and L on a running
+  or paused countdown locks the rest of it. Space does nothing while locked, since a pause would hold the lock
+  forever. The menu bar menu has *Lock Me Out*. ⌥⌘Esc still force-quits: a speed bump, not a jail. The lines
+  are eulogy virtues over résumé virtues (`Lockout.lines`); `just snapshots` writes `locked.png` and
+  `lock-asking.png`.
 - **Issues:** none yet
