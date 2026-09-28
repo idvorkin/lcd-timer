@@ -9,7 +9,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 008:
 
 - **Summary:** A small timer window that floats above my work
-- **Status:** implemented in 4de308b, 2359155 (translucent panel), 203d7ad (pinned by default, pin button); builds and launches on the Mac; the panel over content verified in `just snapshots`; pinned over full-screen iTerm2 verified on the Mac from the window list (layer 3, on screen); the pin button is Igor's check pending
+- **Status:** implemented in 4de308b, 2359155 (translucent panel), 4b95f31 (pinned by default, pin button); builds and launches on the Mac; the panel over content verified in `just snapshots`; pinned over full-screen iTerm2 verified on the Mac from the window list (layer 3, on screen); the pin button is Igor's check pending
 
 #### Use Case:
 - **As a** person working in other apps while the timer runs
@@ -109,7 +109,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 012:
 
 - **Summary:** Lock me out of the Mac for the length of the countdown
-- **Status:** implemented in 62828dd, 88cb7d9 (corner button); verified on the host (lines, asking, timeout); the look in `just snapshots`; covering every screen, the keys and ⌘Tab blocked are Igor's check pending
+- **Status:** implemented in 7cea64e, 12479be (corner button); verified on the host (lines, asking, timeout); the look in `just snapshots`; covering every screen, the keys and ⌘Tab blocked are Igor's check pending
 - **Why:** "a button which I press locks me out for that time (though I can abort)… maybe a motivational thing like are you sure? With some eulogy lines"
 
 #### Use Case:
