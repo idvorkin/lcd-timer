@@ -109,7 +109,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 012:
 
 - **Summary:** Lock me out of the Mac for the length of the countdown
-- **Status:** implemented in 7cea64e, 12479be (corner button); verified on the host (lines, asking, timeout); the look in `just snapshots`; covering every screen, the keys and ⌘Tab blocked are Igor's check pending
+- **Status:** implemented in 7cea64e, 12479be (corner button), 114b143 (⌘ keys ask instead of quitting); verified on the host (lines, asking, timeout, ⌘ keys ask); the look in `just snapshots`; covering every screen, the keys, ⌘Q not quitting and ⌘Tab blocked are Igor's check pending
 - **Why:** "a button which I press locks me out for that time (though I can abort)… maybe a motivational thing like are you sure? With some eulogy lines"
 
 #### Use Case:
