@@ -1,4 +1,5 @@
 app := "build/LCD Timer.app"
+installed := "/Applications/" + file_name(app)
 
 default:
     @just --list
@@ -23,6 +24,17 @@ app:
 run: app
     -pkill -x LCDTimer
     open "{{app}}"
+
+# Copy the app into /Applications: a snapshot that later builds leave alone.
+install: app
+    rm -rf "{{installed}}"
+    cp -R "{{app}}" "{{installed}}"
+
+# Symlink /Applications to this checkout's build, so each `just app` is what Spotlight and the Dock open.
+# The link dangles while the disk holding this checkout is unmounted.
+live-install: app
+    rm -rf "{{installed}}"
+    ln -s "{{justfile_directory()}}/{{app}}" "{{installed}}"
 
 # Render every face and the menu bar pill to build/snapshots/*.png (no screen-recording permission needed).
 snapshots: app
