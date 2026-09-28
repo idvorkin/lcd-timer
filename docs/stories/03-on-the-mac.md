@@ -133,9 +133,16 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** I look for a way to lock
 - **Then:** a small dim lock sits in the window's top-right corner; clicking it does what L does, and hovering names the key
 
+- **Scenario:** Reaching for ⌘Q
+- **Given:** the screen is locked
+- **When:** I press ⌘Q, ⌘W or any other ⌘ key
+- **Then:** the app does not quit and the lock stays; the key does what Escape does, so "Are you sure?" asks first
+
 - **Notes:** The duration is the timer's own: L with nothing typed locks for the last time set, and L on a running
   or paused countdown locks the rest of it. Space does nothing while locked, since a pause would hold the lock
-  forever. The menu bar menu has *Lock Me Out*. ⌥⌘Esc still force-quits: a speed bump, not a jail. The lines
+  forever. The menu bar menu has *Lock Me Out*. ⌥⌘Esc still force-quits: a speed bump, not a jail. ⌘ keys reach
+  the app's main menu before the lock screen, so a local key monitor catches them while locked; unlocked, ⌘Q
+  quits as usual. The lines
   are eulogy virtues over résumé virtues (`Lockout.lines`); `just snapshots` writes `locked.png` and
   `lock-asking.png`.
 - **Issues:** none yet
