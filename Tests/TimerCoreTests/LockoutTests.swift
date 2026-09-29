@@ -37,6 +37,37 @@ private let t0 = Date(timeIntervalSinceReferenceDate: 1_000_000)
     #expect(!lockout.isAsking(at: t0 + Lockout.askTimeout))
 }
 
+@Test func escapeAsksAndOnlyYGivesUp() {
+    var lockout = Lockout(at: t0)
+    let yUnasked = lockout.press(.other("y"), at: t0)  // Y without the question does nothing
+    #expect(!yUnasked)
+    #expect(!lockout.isAsking(at: t0))
+    let escape = lockout.press(.escape, at: t0)
+    #expect(!escape)
+    #expect(lockout.isAsking(at: t0))
+    let yAsked = lockout.press(.other("Y"), at: t0 + 1)
+    #expect(yAsked)
+}
+
+@Test func aCommandKeyAsksInsteadOfQuitting() {
+    var lockout = Lockout(at: t0)
+    let first = lockout.press(.command, at: t0)
+    #expect(!first)
+    #expect(lockout.isAsking(at: t0))
+    // Asked, a second ⌘Q is "any other key": back to the lock, not out of it.
+    let second = lockout.press(.command, at: t0 + 1)
+    #expect(!second)
+    #expect(!lockout.isAsking(at: t0 + 1))
+}
+
+@Test func anyOtherKeyWhileAskingKeepsGoing() {
+    var lockout = Lockout(at: t0)
+    lockout.ask(at: t0)
+    let other = lockout.press(.other("n"), at: t0 + 1)
+    #expect(!other)
+    #expect(!lockout.isAsking(at: t0 + 1))
+}
+
 @Test func theLockedFaceIsTheTimeUnderLOCd() {
     var countdown = Countdown(duration: 1500)
     countdown.start(at: t0)

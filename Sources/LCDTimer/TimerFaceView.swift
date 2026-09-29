@@ -16,6 +16,8 @@ struct TimerFaceView: View {
             .background(Color.black.opacity(model.isFullScreen ? 1 : Self.windowedOpacity))
         .contentShape(Rectangle())
         .onTapGesture { model.toggle() }
+        // The corner buttons go under the keys list, so a click anywhere on the list only puts it away (story 013).
+        .overlay(alignment: .topTrailing) { CornerButtons() }
         .overlay {
             if model.showingHelp {
                 KeysHelp()
@@ -23,7 +25,6 @@ struct TimerFaceView: View {
                     .onTapGesture { model.showingHelp = false }
             }
         }
-        .overlay(alignment: .topTrailing) { CornerButtons() }
         .focusable()
         .focusEffectDisabled()
         .focused($focused)

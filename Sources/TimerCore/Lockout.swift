@@ -32,6 +32,27 @@ public struct Lockout: Equatable, Sendable {
         askedAt = nil
     }
 
+    /// A key on the lock screen, as far as the lock cares.
+    public enum Key: Equatable, Sendable {
+        case escape
+        /// Any ⌘ combination. ⌘Q, ⌘W and the other menu key equivalents would otherwise reach the app's menu and
+        /// end the lock in one keystroke, so they count as Escape.
+        case command
+        case other(String)
+    }
+
+    /// A key while locked: Escape or a ⌘ key asks "are you sure?"; asked, Y gives up and anything else keeps
+    /// going. Returns true when the answer is to give up.
+    public mutating func press(_ key: Key, at now: Date) -> Bool {
+        if isAsking(at: now) {
+            if case .other(let characters) = key, characters.lowercased() == "y" { return true }
+            keepGoing()
+        } else if key == .escape || key == .command {
+            ask(at: now)
+        }
+        return false
+    }
+
     /// The line on screen: one per `lineEvery` while locked, and while asking the next one, so the question
     /// never repeats the line already read.
     public func line(at now: Date) -> String {

@@ -109,7 +109,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 012:
 
 - **Summary:** Lock me out of the Mac for the length of the countdown
-- **Status:** implemented in 7cea64e, 12479be (corner button); verified on the host (lines, asking, timeout); the look in `just snapshots`; covering every screen, the keys and ⌘Tab blocked are Igor's check pending
+- **Status:** implemented in 7cea64e, 12479be (corner button), 114b143 (⌘ keys ask instead of quitting); verified on the host (lines, asking, timeout, ⌘ keys ask); the look in `just snapshots`; covering every screen, the keys, ⌘Q not quitting and ⌘Tab blocked are Igor's check pending
 - **Why:** "a button which I press locks me out for that time (though I can abort)… maybe a motivational thing like are you sure? With some eulogy lines"
 
 #### Use Case:
@@ -133,9 +133,16 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** I look for a way to lock
 - **Then:** a small dim lock sits in the window's top-right corner; clicking it does what L does, and hovering names the key
 
+- **Scenario:** Reaching for ⌘Q
+- **Given:** the screen is locked
+- **When:** I press ⌘Q, ⌘W or any other ⌘ key
+- **Then:** the app does not quit and the lock stays; the key does what Escape does, so "Are you sure?" asks first
+
 - **Notes:** The duration is the timer's own: L with nothing typed locks for the last time set, and L on a running
   or paused countdown locks the rest of it. Space does nothing while locked, since a pause would hold the lock
-  forever. The menu bar menu has *Lock Me Out*. ⌥⌘Esc still force-quits: a speed bump, not a jail. The lines
+  forever. The menu bar menu has *Lock Me Out*. ⌥⌘Esc still force-quits: a speed bump, not a jail. ⌘ keys reach
+  the app's main menu before the lock screen, so a local key monitor catches them while locked; unlocked, ⌘Q
+  quits as usual. The lines
   are eulogy virtues over résumé virtues (`Lockout.lines`); `just snapshots` writes `locked.png` and
   `lock-asking.png`.
 - **Issues:** none yet

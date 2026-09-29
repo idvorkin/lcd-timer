@@ -55,7 +55,7 @@ struct LockScreenView: View {
             .focused($focused)
             .onAppear { focused = true }
             .onKeyPress(phases: .down) { press in
-                model.handleLocked(press)
+                model.handleLocked(press.key == .escape ? .escape : .other(press.characters))
                 return .handled
             }
             .ignoresSafeArea()
@@ -67,9 +67,20 @@ struct LockScreenView: View {
 @MainActor
 final class LockWindows {
     private var windows: [NSWindow] = []
+    private var keyMonitor: Any?
 
     func show(model: TimerModel) {
         guard windows.isEmpty else { return }
+        // ⌘Q, ⌘W and the other menu key equivalents reach the main menu before the lock screen's onKeyPress, so
+        // ⌘Q would end the process and the lock with it. A local monitor sees them first: while locked, a ⌘ key
+        // is Escape, and never reaches the menu. ⌥⌘Esc is the system's, not the app's, and still force-quits.
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak model] event in
+            guard event.modifierFlags.contains(.command) else { return event }
+            if !event.isARepeat {
+                MainActor.assumeIsolated { model?.handleLocked(.command) }
+            }
+            return nil
+        }
         for screen in NSScreen.screens {
             let window = KeyableWindow(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
             window.level = .screenSaver
@@ -89,6 +100,8 @@ final class LockWindows {
 
     func hide() {
         NSApp.presentationOptions = []
+        if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
+        keyMonitor = nil
         for window in windows { window.orderOut(nil) }
         windows = []
     }

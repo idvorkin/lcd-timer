@@ -133,18 +133,14 @@ final class TimerModel {
         lockWindows.show(model: self)
     }
 
-    /// Keys on the lock screen: Escape asks "are you sure?"; asked, Y gives up and anything else keeps going.
-    func handleLocked(_ press: KeyPress) {
+    /// Keys on the lock screen: Escape or a ⌘ key asks "are you sure?"; asked, Y gives up and anything else keeps
+    /// going (`Lockout.press`).
+    func handleLocked(_ key: Lockout.Key) {
         guard var lockout else { return }
-        let now = Date()
-        if lockout.isAsking(at: now) {
-            if press.characters.lowercased() == "y" {
-                log.info("lock abandoned")
-                return reset()
-            }
-            lockout.keepGoing()
-        } else if press.key == .escape {
-            lockout.ask(at: now)
+        if key == .command { log.info("lock ⌘ key") }
+        if lockout.press(key, at: Date()) {
+            log.info("lock abandoned")
+            return reset()
         }
         self.lockout = lockout
     }
