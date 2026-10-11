@@ -50,3 +50,12 @@ project.
   Igor reads the diffs, and a tool edit shows exactly what changed. Shell is for building, testing and git.
 - **Keyboard first.** Every action has a key; the mouse is never required. Propose with a numeric plan or a
   trade-off table, then one "do it".
+
+## Pipeline (no-mistakes)
+
+- **One pipeline run per train.** Finish the whole stack before the first push. Don't push while a run is in
+  flight, unless review or test asked for that fix. Never restart the no-mistakes daemon or reboot while runs are
+  active. Live checks (`just snapshots`, `just run`) happen once, in the driving session's build turn, and go in
+  the PR body; the test step stays on the host (`test.instructions` in `.no-mistakes.yaml`).
+- **Review settles in one fix round.** In round 1, fix every error and warning together. In later rounds, fix
+  errors only and decide info findings in one pass. Cap review at 2 rounds; file the rest as issues.
