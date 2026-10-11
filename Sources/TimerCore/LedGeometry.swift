@@ -62,7 +62,8 @@ public enum LedGeometry {
             } else {
                 let on = segments(for: character)
                 for segment in Segment.allCases {
-                    pieces.append(Piece(rect: frame(of: segment, height: h).offsetBy(dx: x, dy: 0), isLit: on.contains(segment)))
+                    pieces.append(
+                        Piece(rect: frame(of: segment, height: h).offsetBy(dx: x, dy: 0), isLit: on.contains(segment)))
                 }
             }
             x += (charWidth(character) + gap) * h

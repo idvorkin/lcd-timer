@@ -14,24 +14,24 @@ struct TimerFaceView: View {
     var body: some View {
         FaceLayout(face: model.face)
             .background(Color.black.opacity(model.isFullScreen ? 1 : Self.windowedOpacity))
-        .contentShape(Rectangle())
-        .onTapGesture { model.toggle() }
-        // The corner buttons go under the keys list, so a click anywhere on the list only puts it away (story 013).
-        .overlay(alignment: .topTrailing) { CornerButtons() }
-        .overlay {
-            if model.showingHelp {
-                KeysHelp()
-                    .background(Color.black)
-                    .onTapGesture { model.showingHelp = false }
+            .contentShape(Rectangle())
+            .onTapGesture { model.toggle() }
+            // The corner buttons go under the keys list, so a click anywhere on the list only puts it away (story 013).
+            .overlay(alignment: .topTrailing) { CornerButtons() }
+            .overlay {
+                if model.showingHelp {
+                    KeysHelp()
+                        .background(Color.black)
+                        .onTapGesture { model.showingHelp = false }
+                }
             }
-        }
-        .focusable()
-        .focusEffectDisabled()
-        .focused($focused)
-        .onAppear { focused = true }
-        .onKeyPress(phases: .down) { press in model.handle(press) ? .handled : .ignored }
-        .background(WindowAccessor { model.attach($0) })
-        .ignoresSafeArea()
+            .focusable()
+            .focusEffectDisabled()
+            .focused($focused)
+            .onAppear { focused = true }
+            .onKeyPress(phases: .down) { press in model.handle(press) ? .handled : .ignored }
+            .background(WindowAccessor { model.attach($0) })
+            .ignoresSafeArea()
     }
 }
 

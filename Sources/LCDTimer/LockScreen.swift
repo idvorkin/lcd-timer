@@ -48,17 +48,19 @@ struct LockScreenView: View {
     var body: some View {
         let now = model.now
         let lockout = model.lockout ?? Lockout(at: now)
-        LockScreen(face: Face(locked: model.countdown, at: now), line: lockout.line(at: now),
-                   asking: lockout.isAsking(at: now))
-            .focusable()
-            .focusEffectDisabled()
-            .focused($focused)
-            .onAppear { focused = true }
-            .onKeyPress(phases: .down) { press in
-                model.handleLocked(press.key == .escape ? .escape : .other(press.characters))
-                return .handled
-            }
-            .ignoresSafeArea()
+        LockScreen(
+            face: Face(locked: model.countdown, at: now), line: lockout.line(at: now),
+            asking: lockout.isAsking(at: now)
+        )
+        .focusable()
+        .focusEffectDisabled()
+        .focused($focused)
+        .onAppear { focused = true }
+        .onKeyPress(phases: .down) { press in
+            model.handleLocked(press.key == .escape ? .escape : .other(press.characters))
+            return .handled
+        }
+        .ignoresSafeArea()
     }
 }
 
@@ -82,7 +84,8 @@ final class LockWindows {
             return nil
         }
         for screen in NSScreen.screens {
-            let window = KeyableWindow(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
+            let window = KeyableWindow(
+                contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
             window.level = .screenSaver
             window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
             window.isOpaque = false

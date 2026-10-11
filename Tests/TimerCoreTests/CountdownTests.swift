@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import TimerCore
 
 private let t0 = Date(timeIntervalSinceReferenceDate: 1_000_000)
@@ -15,8 +16,9 @@ private let t0 = Date(timeIntervalSinceReferenceDate: 1_000_000)
     #expect(Face(countdown: countdown, entry: entry, at: t0 + 1) == Face(time: "04:59", tone: .red))
 
     countdown.toggle(at: t0 + 10)
-    #expect(Face(countdown: countdown, entry: entry, at: t0 + 60)
-        == Face(time: "04:50", tone: .red, word: "PAUSEd", wordTone: .amber))
+    #expect(
+        Face(countdown: countdown, entry: entry, at: t0 + 60)
+            == Face(time: "04:50", tone: .red, word: "PAUSEd", wordTone: .amber))
 
     countdown.toggle(at: t0 + 60)
     #expect(Face(countdown: countdown, entry: entry, at: t0 + 60 + 290) == Face(time: "donE", tone: .red))

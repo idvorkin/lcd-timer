@@ -26,17 +26,18 @@ private let lit: [Character: String] = [
 ]
 
 private let glyphs: [Character: Set<Segment>] = lit.mapValues { spelling in
-    Set(spelling.map { letter in
-        switch letter {
-        case "a": .a
-        case "b": .b
-        case "c": .c
-        case "d": .d
-        case "e": .e
-        case "f": .f
-        default: .g
-        }
-    })
+    Set(
+        spelling.map { letter in
+            switch letter {
+            case "a": .a
+            case "b": .b
+            case "c": .c
+            case "d": .d
+            case "e": .e
+            case "f": .f
+            default: .g
+            }
+        })
 }
 
 /// The lit segments for one character; blank for anything the display cannot spell.

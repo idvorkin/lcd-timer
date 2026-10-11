@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import TimerCore
 
 private let t0 = Date(timeIntervalSinceReferenceDate: 1_000_000)
