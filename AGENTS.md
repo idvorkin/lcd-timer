@@ -10,6 +10,8 @@ project.
 | Command | What it does |
 |---|---|
 | `just test` | host tests for TimerCore, about a second |
+| `just fmt` | reformats every Swift file with swift-format (`.swift-format`) |
+| `just lint` | fails on unformatted code, then on SwiftLint findings (`.swiftlint.yml`, `brew install swiftlint`) |
 | `just run` | release build, wrapped into `build/LCD Timer.app`, ad-hoc signed, opened |
 | `just install` | builds and copies the app into `/Applications` (a snapshot) |
 | `just live-install` | builds and symlinks `/Applications/LCD Timer.app` to the build, so later builds are what opens |

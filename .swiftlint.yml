@@ -1,0 +1,20 @@
+included:
+  - Sources
+  - Tests
+  - Package.swift
+
+# swift-format owns layout (.swift-format); these overlap with it.
+disabled_rules:
+  - line_length
+  - trailing_comma
+  - opening_brace
+  - vertical_whitespace
+  - trailing_whitespace
+  - closure_parameter_position
+
+opt_in_rules:
+  - force_unwrapping
+
+# Segments a–g and the geometry's x, w, h, t are the names the domain (and the ported context-grabber code) uses.
+identifier_name:
+  min_length: 1

@@ -12,9 +12,10 @@ test:
 fmt:
     swift format -i -r -p Sources Tests Package.swift
 
-# Fail on anything swift-format would change.
+# Fail on anything swift-format would change, then on SwiftLint findings (config: .swiftlint.yml).
 lint:
     swift format lint -r -s -p Sources Tests Package.swift
+    swiftlint lint --strict --quiet
 
 # Build a release binary and wrap it into a signed app bundle (notifications need the bundle).
 app:
