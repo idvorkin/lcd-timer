@@ -21,33 +21,41 @@ enum Snapshots {
         let sizes = [CGSize(width: 480, height: 200), CGSize(width: 300, height: 300)]
         for (name, face) in faces {
             for size in sizes {
-                write(FaceLayout(face: face).background(Color.black).frame(width: size.width, height: size.height),
-                      to: directory.appendingPathComponent("\(name)-\(Int(size.width))x\(Int(size.height)).png"))
+                write(
+                    FaceLayout(face: face).background(Color.black).frame(width: size.width, height: size.height),
+                    to: directory.appendingPathComponent("\(name)-\(Int(size.width))x\(Int(size.height)).png"))
             }
         }
         // The windowed panel over something busy, to judge how much shows through.
         let busy = LinearGradient(colors: [.white, .blue, .yellow], startPoint: .topLeading, endPoint: .bottomTrailing)
-        write(FaceLayout(face: faces[1].1)
+        write(
+            FaceLayout(face: faces[1].1)
                 .background(Color.black.opacity(TimerFaceView.windowedOpacity))
                 .frame(width: 480, height: 200)
                 .background(busy),
-              to: directory.appendingPathComponent("running-over-content.png"))
+            to: directory.appendingPathComponent("running-over-content.png"))
         // Story 013: the keys, at the default window size.
-        write(KeysHelp().background(Color.black).frame(width: 480, height: 200),
-              to: directory.appendingPathComponent("keys-480x200.png"))
+        write(
+            KeysHelp().background(Color.black).frame(width: 480, height: 200),
+            to: directory.appendingPathComponent("keys-480x200.png"))
         // Story 012: the lock screen over something busy, locked and asking.
         let t0 = Date()
         var countdown = Countdown(duration: 1500)
         countdown.start(at: t0)
         for (name, asking) in [("locked", false), ("lock-asking", true)] {
-            write(LockScreen(face: Face(locked: countdown, at: t0 + 1), line: Lockout.lines[asking ? 1 : 0], asking: asking)
-                    .frame(width: 1440, height: 900)
-                    .background(busy),
-                  to: directory.appendingPathComponent("\(name).png"), scale: 1)
+            write(
+                LockScreen(
+                    face: Face(locked: countdown, at: t0 + 1), line: Lockout.lines[asking ? 1 : 0], asking: asking
+                )
+                .frame(width: 1440, height: 900)
+                .background(busy),
+                to: directory.appendingPathComponent("\(name).png"), scale: 1)
         }
         for (name, text, tone) in [("menubar-idle", "8", Tone.white), ("menubar-running", "04:59", .red)] {
             let image = MenuBarLabel.render(text: text, tone: tone)
-            write(Image(nsImage: image).padding(4).background(Color.gray), to: directory.appendingPathComponent("\(name).png"))
+            write(
+                Image(nsImage: image).padding(4).background(Color.gray),
+                to: directory.appendingPathComponent("\(name).png"))
         }
         exit(0)
     }

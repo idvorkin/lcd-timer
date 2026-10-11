@@ -2,6 +2,7 @@
 
 commands:
   test: "just test"
+  lint: "just lint"
 
 # No GitHub workflows in this repo; `just test` (swift test, ~1s) is the whole suite.
 no_ci: true

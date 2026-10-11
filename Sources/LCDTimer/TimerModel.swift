@@ -1,9 +1,9 @@
 import AppKit
 import Observation
-import os
 import SwiftUI
 import TimerCore
 import UserNotifications
+import os
 
 private let log = Logger(subsystem: "com.idvorkin.lcdtimer", category: "timer")
 
@@ -214,13 +214,15 @@ final class TimerModel {
         window.titleVisibility = .hidden
         isFullScreen = window.styleMask.contains(.fullScreen)
         let center = NotificationCenter.default
-        center.addObserver(forName: NSWindow.didEnterFullScreenNotification, object: window, queue: .main) { [weak self] _ in
+        center.addObserver(forName: NSWindow.didEnterFullScreenNotification, object: window, queue: .main) {
+            [weak self] _ in
             MainActor.assumeIsolated {
                 self?.isFullScreen = true
                 NSCursor.setHiddenUntilMouseMoves(true)
             }
         }
-        center.addObserver(forName: NSWindow.didExitFullScreenNotification, object: window, queue: .main) { [weak self] _ in
+        center.addObserver(forName: NSWindow.didExitFullScreenNotification, object: window, queue: .main) {
+            [weak self] _ in
             MainActor.assumeIsolated {
                 self?.isFullScreen = false
                 self?.applyPin()
@@ -244,7 +246,9 @@ final class TimerModel {
         guard let window, !isFullScreen else { return }
         window.level = pinned ? .floating : .normal
         window.collectionBehavior = pinned ? [.canJoinAllSpaces, .fullScreenAuxiliary] : [.fullScreenPrimary]
-        log.info("window pinned=\(self.pinned, privacy: .public) onActiveSpace=\(window.isOnActiveSpace, privacy: .public) visible=\(window.isVisible, privacy: .public) level=\(window.level.rawValue, privacy: .public) frame=\(NSStringFromRect(window.frame), privacy: .public)")
+        log.info(
+            "window pinned=\(self.pinned, privacy: .public) onActiveSpace=\(window.isOnActiveSpace, privacy: .public) visible=\(window.isVisible, privacy: .public) level=\(window.level.rawValue, privacy: .public) frame=\(NSStringFromRect(window.frame), privacy: .public)"
+        )
         for button in [NSWindow.ButtonType.closeButton, .miniaturizeButton, .zoomButton] {
             window.standardWindowButton(button)?.isHidden = pinned
         }
@@ -264,7 +268,9 @@ private final class Notifications: NSObject, UNUserNotificationCenterDelegate, @
         guard let center else { return }
         center.delegate = self
         center.requestAuthorization(options: [.alert]) { granted, error in
-            log.info("notifications granted=\(granted, privacy: .public) \(error?.localizedDescription ?? "", privacy: .public)")
+            log.info(
+                "notifications granted=\(granted, privacy: .public) \(error?.localizedDescription ?? "", privacy: .public)"
+            )
         }
     }
 

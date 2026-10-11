@@ -13,8 +13,9 @@ enum AppIcon {
         for points in [16, 32, 128, 256, 512] {
             for multiple in [1, 2] {
                 let name = multiple == 1 ? "icon_\(points)x\(points).png" : "icon_\(points)x\(points)@2x.png"
-                Snapshots.write(Tile(), to: directory.appendingPathComponent(name),
-                                scale: CGFloat(points * multiple) / Tile.canvas)
+                Snapshots.write(
+                    Tile(), to: directory.appendingPathComponent(name),
+                    scale: CGFloat(points * multiple) / Tile.canvas)
             }
         }
         exit(0)
