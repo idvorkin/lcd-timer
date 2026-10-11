@@ -146,3 +146,33 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
   are eulogy virtues over résumé virtues (`Lockout.lines`); `just snapshots` writes `locked.png` and
   `lock-asking.png`.
 - **Issues:** none yet
+
+---
+
+### User Story 014:
+
+- **Summary:** A crash leaves evidence, and every session leaves a log
+- **Status:** written, not built: waits for the bug-kit release tag that builds with the Command Line Tools
+  (bug-kit#29)
+
+#### Use Case:
+- **As a** person whose timer quit in the middle of a focus block
+- **I want to** find what happened in a file on the Mac, without a crash service
+- **so that** Claude can fix it from evidence instead of guessing
+
+#### Acceptance Criteria:
+- **Scenario:** A session leaves a log
+- **Given:** the app is launched
+- **When:** I start, pause, lock and reset the timer
+- **Then:** `~/Library/Application Support/LCD Timer/logs/lcdtimer-<stamp>.jsonl` holds `session_start` and one
+  line per event (started, toggled, locked, unlocked, done, reset), and nothing is written to `~/Documents`
+
+- **Scenario:** A crash is announced on the next launch
+- **Given:** the app crashed (a signal or an uncaught exception)
+- **When:** I open it again
+- **Then:** `~/Library/Application Support/LCD Timer/crashes/` holds the crash file, and the new session log
+  announces it once as `crash_report`
+
+- **Notes:** bug-kit's `SessionLog` and `CrashReports`, given the Application Support folder instead of their
+  Documents default. `os.Logger` and `just logs` stay for live logs. The report dialog and MetricKit are iOS only.
+- **Issues:** bug-kit#29
