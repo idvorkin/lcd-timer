@@ -15,7 +15,8 @@ fmt:
 # Fail on anything swift-format would change, then on SwiftLint findings (config: .swiftlint.yml).
 lint:
     swift format lint -r -s -p Sources Tests Package.swift
-    swiftlint lint --strict --quiet
+    # Homebrew SwiftLint looks for sourcekitd only inside Xcode; point it at whichever toolchain is selected.
+    TOOLCHAIN_DIR="$(dirname "$(dirname "$(dirname "$(xcrun --find swift)")")")" swiftlint lint --strict --quiet
 
 # Build a release binary and wrap it into a signed app bundle (notifications need the bundle).
 app:
