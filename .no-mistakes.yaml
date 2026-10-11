@@ -7,6 +7,16 @@ commands:
 # No GitHub workflows in this repo; `just test` (swift test, ~1s) is the whole suite.
 no_ci: true
 
+# Pipeline rule 1 (~/tmp/agent/locks/PIPELINE-RULES.md): the test step stays on the host.
+test:
+  instructions: |
+    Host rung only: run the touched module's host tests (`swift test --filter <Suite>`) and read the diff.
+    This is a macOS app with no simulator: do not build the app (`just app`, `just run`, `just snapshots`,
+    `swift build -c release`), do not launch it, and do not run xcodebuild; the driving session owns live
+    evidence under the build turn. List what only the running app can show (windows, keys, sound,
+    notifications, the look in `just snapshots`) as "to verify live" in the report. Do not re-run `just test`:
+    the gate already ran it.
+
 review:
   path_instructions:
     - path: "Sources/LCDTimer/*.swift"
