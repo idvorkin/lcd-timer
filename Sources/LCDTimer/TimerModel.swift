@@ -7,15 +7,13 @@ import os
 
 private let log = Logger(subsystem: "com.idvorkin.lcdtimer", category: "timer")
 
-/// The one timer: its countdown, what is being typed, and the window it shows in. The countdown derives its time
-/// from the clock (story 007); the tick only moves `now` so the views redraw, and notices zero.
+/// The one timer on the Mac: the rules live in `TimerSession` (TimerCore); this feeds it keys and the clock and acts
+/// on what it reports (sound, notification, lock windows, log), and owns the window it shows in. The countdown derives
+/// its time from the clock (story 007); the tick only moves `now` so the views redraw, and notices zero.
 @MainActor @Observable
 final class TimerModel {
-    private(set) var countdown: Countdown
-    private(set) var entry = Entry()
-    private(set) var now = Date()
-    /// Story 012: set while the screen is locked for the countdown.
-    private(set) var lockout: Lockout?
+    private(set) var session: TimerSession
+    private(set) var now: Date
     /// Story 013: the list of keys over the face.
     var showingHelp = false
 
@@ -27,8 +25,8 @@ final class TimerModel {
         }
     }
 
+    @ObservationIgnored private let clock: () -> Date
     @ObservationIgnored private weak var window: NSWindow?
-    @ObservationIgnored private var announcedDone = false
     @ObservationIgnored private var ticker: Timer?
     @ObservationIgnored private let notifications = Notifications()
     @ObservationIgnored private let lockWindows = LockWindows()
@@ -38,9 +36,12 @@ final class TimerModel {
         static let pinned = "pinned"
     }
 
-    init() {
+    /// `clock` is the only source of the time: every rule is asked with what it returns.
+    init(clock: @escaping () -> Date = Date.init) {
+        self.clock = clock
+        now = clock()
         let saved = UserDefaults.standard.double(forKey: Keys.duration)
-        countdown = Countdown(duration: saved > 0 ? saved : 300)
+        session = TimerSession(duration: saved > 0 ? saved : 300)
         // Pinned until I unpin it: only a pinned window can show over a full-screen app's Space.
         pinned = UserDefaults.standard.object(forKey: Keys.pinned) as? Bool ?? true
         notifications.onOpen = { OpenWindowBox.shared.open() }
@@ -48,7 +49,10 @@ final class TimerModel {
         startTicking()
     }
 
-    var face: Face { Face(countdown: countdown, entry: entry, at: now) }
+    var countdown: Countdown { session.countdown }
+    /// Story 012: set while the screen is locked for the countdown.
+    var lockout: Lockout? { session.lockout }
+    var face: Face { Face(countdown: countdown, entry: session.entry, at: now) }
     var phase: Countdown.Phase { countdown.phase(at: now) }
 
     // MARK: - keys (stories 004, 005)
@@ -67,7 +71,7 @@ final class TimerModel {
         case .return: commit()
         case .space: toggle()
         case .escape: reset()
-        case .delete, .deleteForward: entry.backspace()
+        case .delete, .deleteForward: session.backspace()
         case _ where press.characters == "l" && press.modifiers.isEmpty: lockOut()
         default:
             guard let digit = press.characters.first?.wholeNumberValue, press.modifiers.isEmpty else { return false }
@@ -76,87 +80,55 @@ final class TimerModel {
         return true
     }
 
-    /// A digit starts or extends the typed time; it is ignored while a countdown is running or paused.
+    // The actions: each asks the session with a fresh `now`, then acts on what it reports.
+
     func type(_ digit: Int) {
-        if phase == .done { countdown.reset() }
-        guard phase == .idle else { return }
-        entry.type(digit)
+        now = clock()
+        session.type(digit, at: now)
     }
 
-    /// Return: set what was typed and start it; with nothing typed, start the last time again.
-    func commit() {
-        guard phase == .idle || phase == .done else { return }
-        if !entry.isEmpty {
-            countdown.set(duration: entry.duration)
-            UserDefaults.standard.set(entry.duration, forKey: Keys.duration)
-            entry.clear()
-        }
-        start()
-    }
+    func commit() { act { $0.commit(at: $1) } }
+    func toggle() { act { $0.toggle(at: $1) } }
+    func reset() { act { $0.reset(at: $1) } }
+    func lockOut() { act { $0.lockOut(at: $1) } }
 
-    /// Space and a click: start, pause or resume. Something typed is set first, as Return would.
-    func toggle() {
-        guard lockout == nil else { return }  // pausing would hold the lock forever
-        if !entry.isEmpty { return commit() }
-        switch phase {
-        case .idle, .done: start()
-        case .running, .paused:
-            countdown.toggle(at: Date())
-            log.info("toggle -> \(String(describing: self.countdown.state), privacy: .public)")
-            scheduleNotification()
-            tick()
-        }
-    }
-
-    /// Escape: forget what was typed and go back to the set time, idle.
-    func reset() {
-        entry.clear()
-        countdown.reset()
-        log.info("reset")
-        scheduleNotification()
-        tick()
-    }
-
-    // MARK: - the lockout (story 012)
-
-    /// L: start what was typed (or the last time, or carry on a running one) with the screen locked until zero.
-    func lockOut() {
-        guard lockout == nil else { return }
-        switch phase {
-        case .paused: toggle()
-        case .idle, .done: commit()
-        case .running: break
-        }
-        guard phase == .running else { return }
-        lockout = Lockout(at: Date())
-        log.info("lock \(self.countdown.remaining(at: Date()), privacy: .public)s")
-        lockWindows.show(model: self)
-    }
-
-    /// Keys on the lock screen: Escape or a ⌘ key asks "are you sure?"; asked, Y gives up and anything else keeps
-    /// going (`Lockout.press`).
     func handleLocked(_ key: Lockout.Key) {
-        guard var lockout else { return }
         if key == .command { log.info("lock ⌘ key") }
-        if lockout.press(key, at: Date()) {
-            log.info("lock abandoned")
-            return reset()
+        act { $0.pressLocked(key, at: $1) }
+    }
+
+    private func act(_ rule: (inout TimerSession, Date) -> [TimerSession.Event]) {
+        now = clock()
+        perform(rule(&session, now))
+    }
+
+    /// The Mac's side of each event (stories 006, 012).
+    private func perform(_ events: [TimerSession.Event]) {
+        for event in events {
+            switch event {
+            case .started:
+                UserDefaults.standard.set(countdown.duration, forKey: Keys.duration)
+                log.info("start \(self.countdown.duration, privacy: .public)s")
+                scheduleNotification()
+            case .toggled:
+                log.info("toggle -> \(String(describing: self.countdown.state), privacy: .public)")
+                scheduleNotification()
+            case .reset:
+                log.info("reset")
+                scheduleNotification()
+            case .locked:
+                log.info("lock \(self.countdown.remaining(at: self.now), privacy: .public)s")
+                lockWindows.show(model: self)
+            case .abandoned:
+                log.info("lock abandoned")
+            case .unlocked:
+                lockWindows.hide()
+                log.info("unlock")
+            case .done:
+                log.info("done")
+                NSSound(named: "Glass")?.play()
+            }
         }
-        self.lockout = lockout
-    }
-
-    private func unlock() {
-        lockout = nil
-        lockWindows.hide()
-        log.info("unlock")
-    }
-
-    private func start() {
-        countdown.start(at: Date())
-        announcedDone = false
-        log.info("start \(self.countdown.duration, privacy: .public)s")
-        scheduleNotification()
-        tick()
     }
 
     // MARK: - the clock (stories 006, 007)
@@ -177,21 +149,13 @@ final class TimerModel {
         }
     }
 
-    private func tick() {
-        now = Date()
-        if lockout != nil && phase != .running { unlock() }
-        if phase == .done && !announcedDone {
-            announcedDone = true
-            log.info("done")
-            NSSound(named: "Glass")?.play()
-        }
-    }
+    private func tick() { act { $0.tick(at: $1) } }
 
     /// The notification is scheduled for the end when a countdown starts or resumes, so it fires on time even with
     /// the app asleep; pausing or resetting withdraws it.
     private func scheduleNotification() {
         if let end = countdown.end {
-            notifications.schedule(at: end)
+            notifications.schedule(in: end.timeIntervalSince(now))
         } else {
             notifications.cancel()
         }
@@ -274,13 +238,12 @@ private final class Notifications: NSObject, UNUserNotificationCenterDelegate, @
         }
     }
 
-    func schedule(at end: Date) {
+    func schedule(in seconds: TimeInterval) {
         guard let center else { return }
         let content = UNMutableNotificationContent()
         content.title = "Timer done"
         content.body = "Your countdown reached zero."
-        let seconds = max(1, end.timeIntervalSinceNow)
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: seconds, repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, seconds), repeats: false)
         center.add(UNNotificationRequest(identifier: Self.id, content: content, trigger: trigger))
     }
 
