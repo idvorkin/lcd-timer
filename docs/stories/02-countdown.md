@@ -62,7 +62,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 006:
 
 - **Summary:** Time's up is impossible to miss
-- **Status:** implemented in 4de308b; builds and launches on the Mac; the chime and the notification are Igor's check pending
+- **Status:** implemented in 4de308b; builds and launches on the Mac; the chime once at zero (not again, not after a pause or a reset) verified on the host with an injected clock since da605bf; the sound and the notification are Igor's check pending
 
 #### Use Case:
 - **As a** person who has stopped watching the timer
