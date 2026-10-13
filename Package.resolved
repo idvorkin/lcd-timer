@@ -1,13 +1,13 @@
 {
-  "originHash" : "16b568dd7a546e87bd52367bffac6631cd23d4d4cea0ec09374203c1203576b2",
+  "originHash" : "7263fc9dcd3f04ceeafa9eab1a7223a1e159fb456a36343cfc897fa4f501ef4c",
   "pins" : [
     {
       "identity" : "bug-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/idvorkin/bug-kit.git",
       "state" : {
-        "revision" : "0dee3b1327b2132feebf3df7c7610fdca048db87",
-        "version" : "0.3.2"
+        "revision" : "2e1d39a095da7b2745e6737e0ebba40f74d7c02e",
+        "version" : "0.3.3"
       }
     }
   ],
