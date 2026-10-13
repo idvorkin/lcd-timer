@@ -62,7 +62,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 006:
 
 - **Summary:** Time's up is impossible to miss
-- **Status:** implemented in 4de308b; builds and launches on the Mac; the chime once at zero (not again, not after a pause or a reset) verified on the host with an injected clock since da605bf; the sound and the notification are Igor's check pending
+- **Status:** implemented in 4de308b; builds and launches on the Mac; the chime once at zero (not again, not after a pause or a reset) verified on the host with an injected clock since da605bf; a key at zero before the tick still chimes first since 0c97149 (host); the sound and the notification are Igor's check pending
 
 #### Use Case:
 - **As a** person who has stopped watching the timer
@@ -75,8 +75,13 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** it reaches zero
 - **Then:** a chime plays once, the display reads *donE* in red, and a macOS notification says the timer is done; clicking it brings the window forward
 
+- **Scenario:** A key at the very moment it reaches zero
+- **Given:** a countdown has just reached zero and the display has not caught up yet
+- **When:** I press Return, Space, L, Escape or a digit
+- **Then:** the chime still plays once for that countdown before the key starts, locks, resets or types
+
 - **Notes:** Counting up past zero to show how far over you are (for talks) is a candidate for a later story.
-- **Issues:** none yet
+- **Issues:** lcd-9pd (a key between zero and the next tick skipped the chime; found by Codex on PR #8)
 
 ---
 
