@@ -167,7 +167,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **Given:** the app is launched
 - **When:** I start, pause, lock and reset the timer
 - **Then:** `~/Library/Application Support/LCD Timer/logs/lcdtimer-<stamp>.jsonl` holds `session_start` and one
-  line per event (started, toggled, locked, unlocked, done, reset), and nothing is written to `~/Documents`
+  line per event (started, toggled, locked, abandoned, unlocked, done, reset), and nothing is written to `~/Documents`
 
 - **Scenario:** A crash is announced on the next launch
 - **Given:** the app crashed (a signal or an uncaught exception)
