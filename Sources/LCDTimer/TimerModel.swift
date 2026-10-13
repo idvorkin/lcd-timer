@@ -105,6 +105,9 @@ final class TimerModel {
     /// The Mac's side of each event (stories 006, 012).
     private func perform(_ events: [TimerSession.Event]) {
         for event in events {
+            // Story 014: the same events, in this launch's JSONL session log.
+            BugLog.session.event(
+                "\(event)", ["phase": .string("\(phase)"), "remaining": .double(countdown.remaining(at: now))])
             switch event {
             case .started:
                 UserDefaults.standard.set(countdown.duration, forKey: Keys.duration)

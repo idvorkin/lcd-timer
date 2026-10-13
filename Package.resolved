@@ -1,0 +1,15 @@
+{
+  "originHash" : "0a5909a7607f6ff411af029bd57b828e570643961bd9877f85ceb72c7da91b0f",
+  "pins" : [
+    {
+      "identity" : "bug-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/idvorkin/bug-kit.git",
+      "state" : {
+        "revision" : "d7ceaa3b12e92a3dc79ee673574745f3f698b3e4",
+        "version" : "0.3.1"
+      }
+    }
+  ],
+  "version" : 3
+}
