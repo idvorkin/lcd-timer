@@ -94,18 +94,18 @@ final class TimerModel {
         act { $0.pressLocked(key, at: $1) }
     }
 
-    private func act(_ rule: (inout TimerSession, Date) -> [TimerSession.Event]) {
+    private func act(_ rule: (inout TimerSession, Date) -> [TimerSession.Report]) {
         now = clock()
         perform(rule(&session, now))
     }
 
     /// The Mac's side of each event (stories 006, 012).
-    private func perform(_ events: [TimerSession.Event]) {
-        for event in events {
-            // Story 014: the same events, in this launch's JSONL session log.
+    private func perform(_ reports: [TimerSession.Report]) {
+        for report in reports {
+            // Story 014: the same events, in this launch's JSONL session log, each with the state it happened in.
             BugLog.session.event(
-                "\(event)", ["phase": .string("\(phase)"), "remaining": .double(countdown.remaining(at: now))])
-            switch event {
+                "\(report.event)", ["phase": .string("\(report.phase)"), "remaining": .double(report.remaining)])
+            switch report.event {
             case .started:
                 UserDefaults.standard.set(countdown.duration, forKey: Keys.duration)
                 log.info("start \(self.countdown.duration, privacy: .public)s")

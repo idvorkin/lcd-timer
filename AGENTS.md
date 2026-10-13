@@ -50,6 +50,9 @@ project.
   Igor reads the diffs, and a tool edit shows exactly what changed. Shell is for building, testing and git.
 - **Keyboard first.** Every action has a key; the mouse is never required. Propose with a numeric plan or a
   trade-off table, then one "do it".
+- **Shared practices for all apps live in idvorkin/bug-kit (README: Shared practices for every app).** A bug in
+  BugKit code (dialog, dictation, store, crash capture, CloudKit, listener, What's new), or a practice that
+  applies to every app, is filed on idvorkin/bug-kit and linked from here, never fixed in this repo.
 
 ## Pipeline (no-mistakes)
 

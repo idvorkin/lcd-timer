@@ -155,7 +155,9 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **Status:** implemented in 950eba0, 4d3ab5c (bug-kit v0.3.1); builds with the Command Line Tools; verified on
   the Mac (`just run`, 2026-10-12): a session wrote `session_start`, `reset`, `started`, `done` to
   `logs/lcdtimer-<stamp>.jsonl`; after `kill -SEGV` the relaunch announced `crashes/signal-<epoch>.txt` once as
-  `crash_report` (kind signal) and renamed it `.reported.txt`; nothing under `~/Documents`
+  `crash_report` (kind signal) and renamed it `.reported.txt`; nothing under `~/Documents`. Each line's
+  `phase`/`remaining` is the state its event happened in since 35577a5 (host tests; on the Mac 2026-10-13 a 3 s
+  countdown logged `started` running/3 and `done` done/0)
 
 #### Use Case:
 - **As a** person whose timer quit in the middle of a focus block
@@ -167,7 +169,14 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **Given:** the app is launched
 - **When:** I start, pause, lock and reset the timer
 - **Then:** `~/Library/Application Support/LCD Timer/logs/lcdtimer-<stamp>.jsonl` holds `session_start` and one
-  line per event (started, toggled, locked, abandoned, unlocked, done, reset), and nothing is written to `~/Documents`
+  line per event (started, toggled, locked, abandoned, unlocked, done, reset), each with the `phase` and
+  `remaining` at that event, and nothing is written to `~/Documents`
+
+- **Scenario:** A key after zero logs the chime at zero
+- **Given:** a countdown reached zero a moment before the app's next tick
+- **When:** I press Return, Space, L, Escape or a digit
+- **Then:** the log's `done` line says phase `done`, remaining 0, and the key's own events follow with the state
+  they left
 
 - **Scenario:** A crash is announced on the next launch
 - **Given:** the app crashed (a signal or an uncaught exception)
@@ -177,4 +186,4 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 
 - **Notes:** bug-kit's `SessionLog` and `CrashReports`, given the Application Support folder instead of their
   Documents default. `os.Logger` and `just logs` stay for live logs. The report dialog and MetricKit are iOS only.
-- **Issues:** bug-kit#29 (fixed in v0.3.1)
+- **Issues:** bug-kit#29 (fixed in v0.3.1), lcd-5qq
