@@ -93,7 +93,7 @@ final class TimerModel {
     func lockOut() { act { $0.lockOut(at: $1) } }
 
     func handleLocked(_ key: Lockout.Key) {
-        if key == .command { log.info("lock ⌘ key") }
+        if key == .command && lockout != nil { log.info("lock ⌘ key") }
         act { $0.pressLocked(key, at: $1) }
     }
 
