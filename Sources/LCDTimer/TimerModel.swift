@@ -82,10 +82,7 @@ final class TimerModel {
 
     // The actions: each asks the session with a fresh `now`, then acts on what it reports.
 
-    func type(_ digit: Int) {
-        now = clock()
-        session.type(digit, at: now)
-    }
+    func type(_ digit: Int) { act { $0.type(digit, at: $1) } }
 
     func commit() { act { $0.commit(at: $1) } }
     func toggle() { act { $0.toggle(at: $1) } }

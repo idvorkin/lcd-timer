@@ -39,6 +39,48 @@ private func typed(_ digits: Int..., into session: inout TimerSession) {
     #expect(session.tick(at: t0 + 150) == [.done])
 }
 
+// lcd-9pd: a key that lands after zero but before the next tick still gets the chime first.
+
+@Test func returnAfterZeroBeforeTheTickChimesThenStarts() {
+    var session = TimerSession(duration: 60)
+    session.commit(at: t0)
+    #expect(session.commit(at: t0 + 60.05) == [.done, .started])
+    // The restarted countdown chimes at its own zero, too.
+    #expect(session.tick(at: t0 + 121) == [.done])
+}
+
+@Test func spaceAfterZeroBeforeTheTickChimesThenStarts() {
+    var session = TimerSession(duration: 60)
+    session.commit(at: t0)
+    #expect(session.toggle(at: t0 + 60.05) == [.done, .started])
+}
+
+@Test func lockAfterZeroBeforeTheTickChimesThenLocks() {
+    var session = TimerSession(duration: 60)
+    session.commit(at: t0)
+    #expect(session.lockOut(at: t0 + 60.05) == [.done, .started, .locked])
+}
+
+@Test func aDigitAfterZeroBeforeTheTickChimesThenTypes() {
+    var session = TimerSession(duration: 60)
+    session.commit(at: t0)
+    #expect(session.type(5, at: t0 + 60.05) == [.done])
+    #expect(session.entry.digits == [5])
+}
+
+@Test func escapeAfterZeroBeforeTheTickChimesThenResets() {
+    var session = TimerSession(duration: 60)
+    session.commit(at: t0)
+    #expect(session.reset(at: t0 + 60.05) == [.done, .reset])
+}
+
+@Test func theLockLiftsBeforeAKeyAfterZeroIsRead() {
+    var session = TimerSession(duration: 60)
+    session.lockOut(at: t0)
+    #expect(session.pressLocked(.escape, at: t0 + 60.05) == [.unlocked, .done])
+    #expect(session.lockout == nil)
+}
+
 @Test func aResetBeforeZeroNeverChimes() {
     var session = TimerSession(duration: 60)
     session.commit(at: t0)

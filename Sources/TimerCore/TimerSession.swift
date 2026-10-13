@@ -37,11 +37,18 @@ public struct TimerSession: Equatable, Sendable {
         countdown.phase(at: now)
     }
 
+    // Every action settles the clock first (`tick`): a key that lands after zero but before the app's next tick
+    // still gets the chime and lifts the lock before the key does anything (lcd-9pd). A second `tick` at the same
+    // moment reports nothing, so actions that call other actions never announce twice.
+
     /// A digit starts or extends the typed time; it is ignored while a countdown is running or paused.
-    public mutating func type(_ digit: Int, at now: Date) {
+    @discardableResult
+    public mutating func type(_ digit: Int, at now: Date) -> [Event] {
+        let overdue = tick(at: now)
         if phase(at: now) == .done { countdown.reset() }
-        guard phase(at: now) == .idle else { return }
+        guard phase(at: now) == .idle else { return overdue }
         entry.type(digit)
+        return overdue
     }
 
     public mutating func backspace() {
@@ -51,43 +58,46 @@ public struct TimerSession: Equatable, Sendable {
     /// Return: set what was typed and start it; with nothing typed, start the last time again.
     @discardableResult
     public mutating func commit(at now: Date) -> [Event] {
-        guard phase(at: now) == .idle || phase(at: now) == .done else { return [] }
+        let overdue = tick(at: now)
+        guard phase(at: now) == .idle || phase(at: now) == .done else { return overdue }
         if !entry.isEmpty {
             countdown.set(duration: entry.duration)
             entry.clear()
         }
-        return start(at: now)
+        return overdue + start(at: now)
     }
 
     /// Space and a click: start, pause or resume. Something typed is set first, as Return would.
     @discardableResult
     public mutating func toggle(at now: Date) -> [Event] {
-        guard lockout == nil else { return [] }  // pausing would hold the lock forever
-        if !entry.isEmpty { return commit(at: now) }
+        let overdue = tick(at: now)
+        guard lockout == nil else { return overdue }  // pausing would hold the lock forever
+        if !entry.isEmpty { return overdue + commit(at: now) }
         switch phase(at: now) {
-        case .idle, .done: return start(at: now)
+        case .idle, .done: return overdue + start(at: now)
         case .running, .paused:
             countdown.toggle(at: now)
-            return [.toggled] + tick(at: now)
+            return overdue + [.toggled] + tick(at: now)
         }
     }
 
     /// Escape: forget what was typed and go back to the set time, idle.
     @discardableResult
     public mutating func reset(at now: Date) -> [Event] {
+        let overdue = tick(at: now)
         entry.clear()
         countdown.reset()
-        return [.reset] + tick(at: now)
+        return overdue + [.reset] + tick(at: now)
     }
 
     /// L: start what was typed (or the last time, or carry on a running one) with the screen locked until zero.
     @discardableResult
     public mutating func lockOut(at now: Date) -> [Event] {
-        guard lockout == nil else { return [] }
-        var events: [Event] = []
+        var events = tick(at: now)
+        guard lockout == nil else { return events }
         switch phase(at: now) {
-        case .paused: events = toggle(at: now)
-        case .idle, .done: events = commit(at: now)
+        case .paused: events += toggle(at: now)
+        case .idle, .done: events += commit(at: now)
         case .running: break
         }
         guard phase(at: now) == .running else { return events }
@@ -99,7 +109,8 @@ public struct TimerSession: Equatable, Sendable {
     /// going (`Lockout.press`).
     @discardableResult
     public mutating func pressLocked(_ key: Lockout.Key, at now: Date) -> [Event] {
-        guard var lockout else { return [] }
+        let overdue = tick(at: now)
+        guard var lockout else { return overdue }
         if lockout.press(key, at: now) { return [.abandoned] + reset(at: now) }
         self.lockout = lockout
         return []
