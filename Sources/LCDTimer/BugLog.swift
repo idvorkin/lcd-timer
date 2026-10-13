@@ -1,8 +1,9 @@
 import BugKit
 import Foundation
 
-/// Story 014: each launch's JSONL session log and the crash files, under Application Support. bug-kit defaults to
-/// Documents, which for an unsandboxed Mac app is the user's real ~/Documents (bug-kit#29).
+/// Story 014: each launch's JSONL session log and the crash files, in `~/Library/Application Support/LCD Timer/`
+/// (never ~/Documents, which for an unsandboxed Mac app is the user's own folder; bug-kit#29). bug-kit's own Mac
+/// default would be the bundle-ID folder; the readable name is the one the stories and Igor look for.
 enum BugLog {
     static let folder = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("LCD Timer", isDirectory: true)
