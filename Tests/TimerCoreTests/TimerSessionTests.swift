@@ -109,6 +109,29 @@ extension [TimerSession.Report] {
     #expect(reset.last == TimerSession.Report(event: .reset, phase: .idle, remaining: 60))
 }
 
+@Test func aLockAfterZeroKeepsTheDoneReportAtZero() {
+    var session = TimerSession(duration: 60)
+    session.commit(at: t0)
+    #expect(
+        session.lockOut(at: t0 + 60.05) == [
+            TimerSession.Report(event: .done, phase: .done, remaining: 0),
+            TimerSession.Report(event: .started, phase: .running, remaining: 60),
+            TimerSession.Report(event: .locked, phase: .running, remaining: 60),
+        ])
+}
+
+@Test func aPauseReportsTheTimeLeftAtThePause() {
+    var session = TimerSession(duration: 60)
+    session.commit(at: t0)
+    #expect(session.toggle(at: t0 + 20) == [TimerSession.Report(event: .toggled, phase: .paused, remaining: 40)])
+}
+
+@Test func aShortCountdownReportsItsStartAndItsZero() {
+    var session = TimerSession(duration: 3)
+    #expect(session.commit(at: t0) == [TimerSession.Report(event: .started, phase: .running, remaining: 3)])
+    #expect(session.tick(at: t0 + 3) == [TimerSession.Report(event: .done, phase: .done, remaining: 0)])
+}
+
 @Test func aGivenUpLockReportsTheTimeItWasGivenUpAt() {
     var session = TimerSession(duration: 60)
     session.lockOut(at: t0)
