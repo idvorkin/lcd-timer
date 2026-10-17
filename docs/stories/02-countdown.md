@@ -88,7 +88,9 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 007:
 
 - **Summary:** The time stays right through sleep and a busy Mac (technical)
-- **Status:** implemented in 4de308b; verified on the host with an injected clock; a real lid close is Igor's check pending
+- **Status:** implemented in 4de308b; verified on the host with an injected clock; a real lid close is Igor's check pending.
+  Idle costs nothing since dcc4c65 (host tests; on the Mac 2026-10-17, `ps`/`top` read 0.0% idle, paused and done,
+  1.6–2.9% counting down, down from 13–18% idle); a 3 s countdown still read done at 3.02 s
 
 #### Use Case:
 - **As a** person whose Mac sleeps, or who hides the window for an hour
@@ -101,9 +103,16 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** I close the lid for two minutes and open it again
 - **Then:** the display shows four minutes left within a second of waking; had it run out while asleep, it reads *donE* and the notification is waiting
 
+- **Scenario:** A timer left on screen all day
+- **Given:** the timer is idle, paused or done, with its window open
+- **When:** hours pass
+- **Then:** it uses no CPU; counting down, it redraws only when the shown second changes
+
 - **Notes:** The countdown stores its end time and derives the display from the clock; the tick only redraws.
-  This state machine lives in the platform-free core and is tested on the host with an injected clock.
-- **Issues:** none yet
+  This state machine lives in the platform-free core and is tested on the host with an injected clock. The tick
+  runs only while a countdown runs (`TimerSession.needsClock`), and the views move only when
+  `TimerSession.display` changes.
+- **Issues:** lcd-umw
 
 ---
 
