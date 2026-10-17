@@ -6,7 +6,7 @@ let package = Package(
     platforms: [.macOS(.v14)],
     dependencies: [
         // The session log and crash capture (story 014). Pinned to a tag: the train's bug-kit release.
-        .package(url: "https://github.com/idvorkin/bug-kit.git", exact: "0.3.3")
+        .package(url: "https://github.com/idvorkin/bug-kit.git", exact: "0.3.4")
     ],
     targets: [
         // Platform-free: glyphs, geometry, the countdown and the typed entry. Tested on the host.
