@@ -243,3 +243,44 @@ extension [TimerSession.Report] {
     #expect(session.pressLocked(.other("y"), at: t0).isEmpty)
     #expect(session.phase(at: t0) == .idle)
 }
+
+// lcd-umw: the clock is watched only while it matters, and the screens change at most once a second.
+
+@Test func onlyARunningCountdownOrALockNeedsTheClock() {
+    var session = TimerSession(duration: 60)
+    #expect(!session.needsClock(at: t0))
+    session.commit(at: t0)
+    #expect(session.needsClock(at: t0 + 1))
+    session.toggle(at: t0 + 10)
+    #expect(!session.needsClock(at: t0 + 3600))
+    session.toggle(at: t0 + 3600)
+    #expect(session.needsClock(at: t0 + 3601))
+    #expect(!session.needsClock(at: t0 + 3650))
+
+    var locked = TimerSession(duration: 60)
+    locked.lockOut(at: t0)
+    #expect(locked.needsClock(at: t0 + 30))
+    locked.tick(at: t0 + 60)
+    #expect(!locked.needsClock(at: t0 + 61))
+}
+
+@Test func theDisplayChangesOncePerSecondWhileRunningAndNeverWhileIdle() {
+    var session = TimerSession(duration: 60)
+    #expect(session.display(at: t0) == session.display(at: t0 + 3600))
+    session.commit(at: t0)
+    #expect(session.display(at: t0 + 0.1) == session.display(at: t0 + 0.9))
+    #expect(session.display(at: t0 + 0.9) != session.display(at: t0 + 1.1))
+    session.toggle(at: t0 + 10)
+    #expect(session.display(at: t0 + 10) == session.display(at: t0 + 3600))
+}
+
+@Test func theLockScreenChangesWithItsLineAndItsQuestion() {
+    var session = TimerSession(duration: 3600)
+    session.lockOut(at: t0)
+    let start = session.display(at: t0 + 0.5)
+    #expect(start.lockedFace != nil && start.lockLine != nil && !start.asking)
+    #expect(session.display(at: t0 + 59.5).lockLine != session.display(at: t0 + 60.5).lockLine)
+    session.pressLocked(.escape, at: t0 + 100)
+    #expect(session.display(at: t0 + 100.5).asking)
+    #expect(!session.display(at: t0 + 100 + Lockout.askTimeout + 1).asking)
+}
