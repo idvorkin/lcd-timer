@@ -108,9 +108,9 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **When:** hours pass
 - **Then:** it uses no CPU; counting down, it redraws only when the shown second changes
 
-- **Notes:** The countdown stores its end time and derives the display from the clock; the tick only redraws.
-  This state machine lives in the platform-free core and is tested on the host with an injected clock. The tick
-  runs only while a countdown runs (`TimerSession.needsClock`), and the views move only when
+- **Notes:** The countdown stores its end time and derives the display from the clock; the tick only notices zero and
+  redraws. This state machine lives in the platform-free core and is tested on the host with an injected clock. The
+  tick runs only while a countdown runs or the lock is up (`TimerSession.needsClock`), and the views move only when
   `TimerSession.display` changes.
 - **Issues:** lcd-umw
 

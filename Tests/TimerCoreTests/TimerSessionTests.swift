@@ -284,3 +284,79 @@ extension [TimerSession.Report] {
     #expect(session.display(at: t0 + 100.5).asking)
     #expect(!session.display(at: t0 + 100 + Lockout.askTimeout + 1).asking)
 }
+
+// lcd-umw, end to end on the fake clock: a 10 Hz ticker that runs only while `needsClock` says so, redrawing only
+// when `display` changes, the way the app drives it. Oracle: story 007 (zero on time, about one redraw a second while
+// counting down, nothing while idle or after zero) and story 012 (the lock lifts at zero, the question times out).
+
+/// Ticks `session` every 0.1 s from `start` while it needs the clock, up to `limit`; returns the redraws (display
+/// changes), every reported event with its time, and when the ticker stopped.
+private func runTicker(
+    _ session: inout TimerSession, from start: Date, limit: TimeInterval
+) -> (redraws: Int, events: [(TimerSession.Event, TimeInterval)], stoppedAt: TimeInterval?) {
+    var shown = session.display(at: start)
+    var redraws = 0
+    var events: [(TimerSession.Event, TimeInterval)] = []
+    var step = 1
+    while Double(step) * 0.1 <= limit {
+        let time = start + Double(step) * 0.1
+        events += session.tick(at: time).map { ($0.event, time.timeIntervalSince(start)) }
+        let next = session.display(at: time)
+        if next != shown {
+            shown = next
+            redraws += 1
+        }
+        if !session.needsClock(at: time) { return (redraws, events, time.timeIntervalSince(start)) }
+        step += 1
+    }
+    return (redraws, events, nil)
+}
+
+@Test func aThreeSecondCountdownOnTheGatedTickerIsDoneOnTimeThenGoesQuiet() {
+    var session = TimerSession(duration: 3)
+    session.commit(at: t0)
+    let run = runTicker(&session, from: t0, limit: 3600)
+    #expect(run.events.map(\.0) == [.done])
+    #expect(abs((run.events.first?.1 ?? -1) - 3) < 0.11)
+    #expect(run.stoppedAt != nil && run.stoppedAt! < 3.11)
+    #expect((3...4).contains(run.redraws))
+    // Done stays done: an hour later nothing has changed and nothing asks for the clock.
+    let done = session.display(at: t0 + 3.2)
+    #expect(session.display(at: t0 + 3600) == done)
+    #expect(!session.needsClock(at: t0 + 3600))
+    #expect(session.tick(at: t0 + 3600).isEmpty)
+}
+
+@Test func aPausedCountdownStopsTheTickerAndResumingStartsIt() {
+    var session = TimerSession(duration: 60)
+    session.commit(at: t0)
+    #expect(runTicker(&session, from: t0, limit: 5).stoppedAt == nil)
+    session.toggle(at: t0 + 5)
+    #expect(!session.needsClock(at: t0 + 5))
+    let paused = session.display(at: t0 + 5)
+    #expect(session.display(at: t0 + 1800) == paused)
+    session.toggle(at: t0 + 1800)
+    #expect(session.needsClock(at: t0 + 1800))
+    let rest = runTicker(&session, from: t0 + 1800, limit: 3600)
+    #expect(rest.events.map(\.0) == [.done])
+    #expect(abs((rest.events.first?.1 ?? -1) - 55) < 0.11)
+    #expect((55...56).contains(rest.redraws))
+}
+
+@Test func aLockedCountdownOnTheGatedTickerShowsItsLineAndQuestionThenLifts() {
+    var session = TimerSession(duration: 130)
+    session.lockOut(at: t0)
+    let firstLine = session.display(at: t0).lockLine
+    #expect(firstLine != nil)
+    #expect(runTicker(&session, from: t0, limit: 61).stoppedAt == nil)
+    #expect(session.display(at: t0 + 61).lockLine != firstLine)
+    session.pressLocked(.escape, at: t0 + 70)
+    #expect(session.display(at: t0 + 70.1).asking)
+    #expect(session.needsClock(at: t0 + 70.1))
+    #expect(!session.display(at: t0 + 70 + Lockout.askTimeout + 0.1).asking)
+    let rest = runTicker(&session, from: t0 + 70, limit: 3600)
+    #expect(rest.events.map(\.0) == [.unlocked, .done])
+    #expect(abs((rest.events.first?.1 ?? -1) - 60) < 0.11)
+    #expect(session.lockout == nil)
+    #expect(!session.needsClock(at: t0 + 3600))
+}
