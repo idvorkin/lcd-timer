@@ -16,6 +16,9 @@ test:
     evidence under the build turn. List what only the running app can show (windows, keys, sound,
     notifications, the look in `just snapshots`) as "to verify live" in the report. Do not re-run `just test`:
     the gate already ran it.
+    Only one simulator on this Mac at a time, and this repo needs none: never boot one. If you did anyway, then
+    when done (pass or fail) `xcrun simctl shutdown` and `xcrun simctl delete` every device you created, and make
+    sure no `xcodebuild`/`xctest` you started is still running. Bound every `xcodebuild test` with a timeout.
 
 review:
   path_instructions:
