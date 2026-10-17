@@ -291,9 +291,13 @@ extension [TimerSession.Report] {
 
 /// Ticks `session` every 0.1 s from `start` while it needs the clock, up to `limit`; returns the redraws (display
 /// changes), every reported event with its time, and when the ticker stopped.
-private func runTicker(
-    _ session: inout TimerSession, from start: Date, limit: TimeInterval
-) -> (redraws: Int, events: [(TimerSession.Event, TimeInterval)], stoppedAt: TimeInterval?) {
+private struct TickerRun {
+    let redraws: Int
+    let events: [(TimerSession.Event, TimeInterval)]
+    let stoppedAt: TimeInterval?
+}
+
+private func runTicker(_ session: inout TimerSession, from start: Date, limit: TimeInterval) -> TickerRun {
     var shown = session.display(at: start)
     var redraws = 0
     var events: [(TimerSession.Event, TimeInterval)] = []
@@ -306,10 +310,12 @@ private func runTicker(
             shown = next
             redraws += 1
         }
-        if !session.needsClock(at: time) { return (redraws, events, time.timeIntervalSince(start)) }
+        if !session.needsClock(at: time) {
+            return TickerRun(redraws: redraws, events: events, stoppedAt: time.timeIntervalSince(start))
+        }
         step += 1
     }
-    return (redraws, events, nil)
+    return TickerRun(redraws: redraws, events: events, stoppedAt: nil)
 }
 
 @Test func aThreeSecondCountdownOnTheGatedTickerIsDoneOnTimeThenGoesQuiet() {
@@ -318,7 +324,7 @@ private func runTicker(
     let run = runTicker(&session, from: t0, limit: 3600)
     #expect(run.events.map(\.0) == [.done])
     #expect(abs((run.events.first?.1 ?? -1) - 3) < 0.11)
-    #expect(run.stoppedAt != nil && run.stoppedAt! < 3.11)
+    #expect((run.stoppedAt ?? .infinity) < 3.11)
     #expect((3...4).contains(run.redraws))
     // Done stays done: an hour later nothing has changed and nothing asks for the clock.
     let done = session.display(at: t0 + 3.2)
