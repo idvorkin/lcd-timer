@@ -106,7 +106,12 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 - **Scenario:** A timer left on screen all day
 - **Given:** the timer is idle, paused or done, with its window open
 - **When:** hours pass
-- **Then:** it uses no CPU; counting down, it redraws only when the shown second changes
+- **Then:** it uses no CPU
+
+- **Scenario:** A countdown redraws once a second
+- **Given:** a countdown running with its window open
+- **When:** a tenth of a second passes without the shown second changing
+- **Then:** nothing is redrawn
 
 - **Notes:** The countdown stores its end time and derives the display from the clock; the tick only notices zero and
   redraws. This state machine lives in the platform-free core and is tested on the host with an injected clock. The
