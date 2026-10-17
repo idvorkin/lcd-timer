@@ -9,7 +9,8 @@ private let log = Logger(subsystem: "com.idvorkin.lcdtimer", category: "timer")
 
 /// The one timer on the Mac: the rules live in `TimerSession` (TimerCore); this feeds it keys and the clock and acts
 /// on what it reports (sound, notification, lock windows, log), and owns the window it shows in. The countdown derives
-/// its time from the clock (story 007); the tick only moves `now` so the views redraw, and notices zero.
+/// its time from the clock (story 007); the tick, which runs only while counting down, notices zero and moves `now`
+/// when the shown time changes.
 @MainActor @Observable
 final class TimerModel {
     private(set) var session: TimerSession
@@ -46,7 +47,7 @@ final class TimerModel {
         pinned = UserDefaults.standard.object(forKey: Keys.pinned) as? Bool ?? true
         notifications.onOpen = { OpenWindowBox.shared.open() }
         notifications.requestPermission()
-        startTicking()
+        observeWake()
     }
 
     var countdown: Countdown { session.countdown }
@@ -95,12 +96,21 @@ final class TimerModel {
     }
 
     private func act(_ rule: (inout TimerSession, Date) -> [TimerSession.Report]) {
-        now = clock()
-        perform(rule(&session, now))
+        let time = clock()
+        var next = session
+        let reports = rule(&next, time)
+        // The observed state moves only when something shown changes, so an idle or paused timer, and 9 of 10
+        // ticks while counting down, cost no redraw (lcd-umw).
+        if next != session || next.display(at: time) != session.display(at: now) {
+            session = next
+            now = time
+        }
+        perform(reports, at: time)
+        updateTicker(at: time)
     }
 
     /// The Mac's side of each event (stories 006, 012).
-    private func perform(_ reports: [TimerSession.Report]) {
+    private func perform(_ reports: [TimerSession.Report], at time: Date) {
         for report in reports {
             // Story 014: the same events, in this launch's JSONL session log, each with the state it happened in.
             BugLog.session.event(
@@ -109,15 +119,15 @@ final class TimerModel {
             case .started:
                 UserDefaults.standard.set(countdown.duration, forKey: Keys.duration)
                 log.info("start \(self.countdown.duration, privacy: .public)s")
-                scheduleNotification()
+                scheduleNotification(at: time)
             case .toggled:
                 log.info("toggle -> \(String(describing: self.countdown.state), privacy: .public)")
-                scheduleNotification()
+                scheduleNotification(at: time)
             case .reset:
                 log.info("reset")
-                scheduleNotification()
+                scheduleNotification(at: time)
             case .locked:
-                log.info("lock \(self.countdown.remaining(at: self.now), privacy: .public)s")
+                log.info("lock \(self.countdown.remaining(at: time), privacy: .public)s")
                 lockWindows.show(model: self)
             case .abandoned:
                 log.info("lock abandoned")
@@ -133,12 +143,8 @@ final class TimerModel {
 
     // MARK: - the clock (stories 006, 007)
 
-    private func startTicking() {
-        let timer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.tick() }
-        }
-        RunLoop.main.add(timer, forMode: .common)
-        ticker = timer
+    /// A wake settles the clock at once: a countdown that ran out during sleep reads done (story 007).
+    private func observeWake() {
         NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didWakeNotification, object: nil, queue: .main
         ) { [weak self] _ in
@@ -151,11 +157,28 @@ final class TimerModel {
 
     private func tick() { act { $0.tick(at: $1) } }
 
+    /// The 10 Hz tick runs only while the clock matters (a running countdown, or the lock over it), so an idle,
+    /// paused or finished timer wakes nothing (lcd-umw). 0.1 s keeps zero and the lock's question on time.
+    private func updateTicker(at time: Date) {
+        if session.needsClock(at: time) {
+            guard ticker == nil else { return }
+            let timer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
+                MainActor.assumeIsolated { self?.tick() }
+            }
+            timer.tolerance = 0.02
+            RunLoop.main.add(timer, forMode: .common)
+            ticker = timer
+        } else {
+            ticker?.invalidate()
+            ticker = nil
+        }
+    }
+
     /// The notification is scheduled for the end when a countdown starts or resumes, so it fires on time even with
     /// the app asleep; pausing or resetting withdraws it.
-    private func scheduleNotification() {
+    private func scheduleNotification(at time: Date) {
         if let end = countdown.end {
-            notifications.schedule(in: end.timeIntervalSince(now))
+            notifications.schedule(in: end.timeIntervalSince(time))
         } else {
             notifications.cancel()
         }

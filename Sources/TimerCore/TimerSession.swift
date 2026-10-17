@@ -45,6 +45,29 @@ public struct TimerSession: Equatable, Sendable {
         countdown.phase(at: now)
     }
 
+    /// Everything the window, the menu bar and the lock screen show at `now`. The app redraws only when this
+    /// changes, about once a second while counting down and never while idle, paused or done (lcd-umw).
+    public struct Display: Equatable, Sendable {
+        public let face: Face
+        public let lockedFace: Face?
+        public let lockLine: String?
+        public let asking: Bool
+    }
+
+    public func display(at now: Date) -> Display {
+        Display(
+            face: Face(countdown: countdown, entry: entry, at: now),
+            lockedFace: lockout.map { _ in Face(locked: countdown, at: now) },
+            lockLine: lockout?.line(at: now),
+            asking: lockout?.isAsking(at: now) ?? false)
+    }
+
+    /// Whether the clock needs watching: only a running countdown (and the lock over it) changes with time, so the
+    /// app ticks only then (lcd-umw).
+    public func needsClock(at now: Date) -> Bool {
+        phase(at: now) == .running || lockout != nil
+    }
+
     // Every action settles the clock first (`tick`): a key that lands after zero but before the app's next tick
     // still gets the chime and lifts the lock before the key does anything (lcd-9pd). A second `tick` at the same
     // moment reports nothing, so actions that call other actions never announce twice.
