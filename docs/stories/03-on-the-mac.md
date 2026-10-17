@@ -157,8 +157,8 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
   `logs/lcdtimer-<stamp>.jsonl`; after `kill -SEGV` the relaunch announced `crashes/signal-<epoch>.txt` once as
   `crash_report` (kind signal) and renamed it `.reported.txt`; nothing under `~/Documents`. Each line's
   `phase`/`remaining` is the state its event happened in since 35577a5 (host tests; on the Mac 2026-10-13 a 3 s
-  countdown logged `started` running/3 and `done` done/0). On bug-kit v0.3.3 since 50ad1cf (on the Mac
-  2026-10-13: `just run` wrote `session_start` to the JSONL log)
+  countdown logged `started` running/3 and `done` done/0). On bug-kit v0.3.4 since 18c5630 (on the Mac
+  2026-10-17: `just run` wrote `session_start` to the JSONL log, 0.0% CPU idle)
 
 #### Use Case:
 - **As a** person whose timer quit in the middle of a focus block
