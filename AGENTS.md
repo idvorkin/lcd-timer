@@ -10,6 +10,7 @@ project.
 | Command | What it does |
 |---|---|
 | `just test` | host tests for TimerCore, about a second |
+| `just test-linux` | on a Linux box: TimerCore's tests on Linux Swift, then the app cross-built for macOS (compiled, not run) |
 | `just fmt` | reformats every Swift file with swift-format (`.swift-format`) |
 | `just lint` | fails on unformatted code, then on SwiftLint findings (`.swiftlint.yml`, `brew install swiftlint`) |
 | `just run` | release build, wrapped into `build/LCD Timer.app`, ad-hoc signed, opened |

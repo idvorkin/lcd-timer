@@ -1,4 +1,9 @@
-import CoreGraphics
+// CGFloat, CGRect and CGSize: CoreGraphics on Apple, Foundation's own on Linux (`just test-linux`).
+#if canImport(CoreGraphics)
+    import CoreGraphics
+#else
+    import Foundation
+#endif
 
 /// Where the bars and dots of an LED string sit, ported from context-grabber's `components/LedDisplay.tsx`.
 ///

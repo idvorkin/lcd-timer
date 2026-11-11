@@ -57,7 +57,7 @@ struct LockScreenView: View {
         .focused($focused)
         .onAppear { focused = true }
         .onKeyPress(phases: .down) { press in
-            model.handleLocked(press.key == .escape ? .escape : .other(press.characters))
+            model.handleLocked(Lockout.Key(KeyInput(press)))
             return .handled
         }
         .ignoresSafeArea()

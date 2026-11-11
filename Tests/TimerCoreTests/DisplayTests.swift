@@ -1,7 +1,13 @@
-import CoreGraphics
 import Testing
 
 @testable import TimerCore
+
+// CGFloat and CGSize: CoreGraphics on Apple, Foundation's own on Linux (`just test-linux`).
+#if canImport(CoreGraphics)
+    import CoreGraphics
+#else
+    import Foundation
+#endif
 
 // Story 001: seven-segment digits with ghosts.
 

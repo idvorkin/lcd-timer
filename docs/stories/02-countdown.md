@@ -9,7 +9,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 004:
 
 - **Summary:** Type a time like a microwave
-- **Status:** implemented in 4de308b; verified on the host (entry, normalising); the keys in the app are Igor's check pending
+- **Status:** implemented in 4de308b; verified on the host (entry, normalising; since 1cd57dd the key map: digits, Return, Delete, a modified digit left to the system); the keys reaching the window are Igor's check pending
 
 #### Use Case:
 - **As a** person who knows how long they want
@@ -36,7 +36,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 005:
 
 - **Summary:** Start, pause, resume and reset from the keyboard
-- **Status:** implemented in 4de308b; verified on the host (toggle, reset); the keys and the click are Igor's check pending
+- **Status:** implemented in 4de308b; verified on the host (toggle, reset; since 1cd57dd Space and Escape in the key map); the keys reaching the window and the click are Igor's check pending
 
 #### Use Case:
 - **As a** person with their hands busy
@@ -124,7 +124,7 @@ Part of the [user stories](README.md); persona, format and the Status vocabulary
 ### User Story 013:
 
 - **Summary:** ? shows every key
-- **Status:** implemented in 9f4934f, 7a247e8 (a click on the list over the corner buttons only dismisses it); the list verified in `just snapshots`; the key, the corner button and that click are Igor's check pending
+- **Status:** implemented in 9f4934f, 7a247e8 (a click on the list over the corner buttons only dismisses it); the list verified in `just snapshots`; ? opening it and any key only putting it away verified on the host since 1cd57dd; the key reaching the window, the corner button and that click are Igor's check pending
 - **Why:** "a ? to see the bindings, I don't see how to do it"
 
 #### Use Case:

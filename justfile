@@ -8,6 +8,11 @@ default:
 test:
     swift test
 
+# The Linux rung, on a Linux box (scripts/test-linux.sh says what it needs): TimerCore's tests run on Linux, then the
+# app cross-built for macOS with a Darwin Swift SDK, compiled and never run.
+test-linux:
+    scripts/test-linux.sh
+
 # Reformat every Swift file in place with swift-format (config: .swift-format).
 fmt:
     swift format -i -r -p Sources Tests Package.swift

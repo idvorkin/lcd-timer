@@ -56,27 +56,20 @@ final class TimerModel {
     var face: Face { Face(countdown: countdown, entry: session.entry, at: now) }
     var phase: Countdown.Phase { countdown.phase(at: now) }
 
-    // MARK: - keys (stories 004, 005)
+    // MARK: - keys (stories 004, 005, 013)
 
+    /// Which key does what is `KeyCommand` (TimerCore, host-tested); this only carries it out.
     func handle(_ press: KeyPress) -> Bool {
-        // Story 013: ? shows the keys; any key puts them away without doing anything else.
-        if showingHelp {
-            showingHelp = false
-            return true
-        }
-        if press.characters == "?" {
-            showingHelp = true
-            return true
-        }
-        switch press.key {
-        case .return: commit()
-        case .space: toggle()
-        case .escape: reset()
-        case .delete, .deleteForward: session.backspace()
-        case _ where press.characters == "l" && press.modifiers.isEmpty: lockOut()
-        default:
-            guard let digit = press.characters.first?.wholeNumberValue, press.modifiers.isEmpty else { return false }
-            type(digit)
+        guard let command = KeyCommand(KeyInput(press), showingHelp: showingHelp) else { return false }
+        switch command {
+        case .dismissHelp: showingHelp = false
+        case .showHelp: showingHelp = true
+        case .type(let digit): type(digit)
+        case .commit: commit()
+        case .toggle: toggle()
+        case .reset: reset()
+        case .backspace: session.backspace()
+        case .lockOut: lockOut()
         }
         return true
     }
